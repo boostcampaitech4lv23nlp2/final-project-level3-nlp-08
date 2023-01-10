@@ -1,0 +1,6 @@
+*.ipynb
+kobart*
+data
+data_csv
+logs*
+*_use.sh
