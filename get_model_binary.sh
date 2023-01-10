@@ -1,0 +1,1 @@
+python get_model_binary.py --hparams ./{DEFAULT_ROOT_DIR}/tb_logs/default/version_0/hparams.yaml --model_binary ./{DEFAULT_ROOT_DIR}/model_chp/{CKPT_FILE} --output_dir {OUTPUT_DIR}
