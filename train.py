@@ -27,12 +27,12 @@ class ArgsBase():
             parents=[parent_parser], add_help=False)
         parser.add_argument('--train_file',
                             type=str,
-                            default='./data_csv/Training/개인및관계.csv',
+                            default='./data_csv/Training/concatenate.csv',
                             help='train file')
 
         parser.add_argument('--test_file',
                             type=str,
-                            default='./data_csv/Validation/개인및관계.csv',
+                            default='./data_csv/Validation/concatenate.csv',
                             help='test file')
 
         parser.add_argument('--batch_size',
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     parser = ArgsBase.add_model_specific_args(parser)
     parser = KobartSummaryModule.add_model_specific_args(parser)
     parser = pl.Trainer.add_argparse_args(parser)
-    tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1')
+    tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v2')
     args = parser.parse_args()
     logging.info(args)
 
