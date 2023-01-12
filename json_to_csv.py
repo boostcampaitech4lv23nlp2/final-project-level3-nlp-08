@@ -4,6 +4,7 @@ import os
 
 trainTypes = ['Training', 'Validation']
 domains = ['개인및관계', '미용과건강', '상거래(쇼핑)', '시사교육', '식음료', '여가생활', '일과직업', '주거와생활', '행사']
+pattern = '([ㄱ-ㅎㅏ-ㅣ]+)'
 
 for trainType in trainTypes:
     for domain in domains:
@@ -20,6 +21,7 @@ for trainType in trainTypes:
             string = ''
             for j in range(len(dialogue)):
                 string += dialogue[j]['utterance'] + ' '
+            string = re.sub(pattern=pattern, repl='', string=string)
             X_data.append(string)
             y_data.append(summary)
 
