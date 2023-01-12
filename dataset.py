@@ -41,7 +41,7 @@ class KoBARTSummaryDataset(Dataset):
     
     def __getitem__(self, idx):
         instance = self.docs.iloc[idx]
-        input_ids = self.tokenizer.encode(instance['passage'])
+        input_ids = self.tokenizer.encode(instance['context'])
         input_ids = self.add_padding_data(input_ids)
 
         label_ids = self.tokenizer.encode(instance['summary'])
