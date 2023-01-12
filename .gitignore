@@ -1,6 +1,11 @@
 *.ipynb
-kobart*
 data
 data_csv
-logs*
+data_csv_new
 *_use.sh
+models
+pre_models
+*.json
+test.txt
+*.pyc
+crall
