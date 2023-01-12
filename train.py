@@ -27,17 +27,17 @@ class ArgsBase():
             parents=[parent_parser], add_help=False)
         parser.add_argument('--train_file',
                             type=str,
-                            default='./data_csv/Training/concatenate.csv',
+                            default='./data_csv_new/Training/all.csv',
                             help='train file')
 
         parser.add_argument('--test_file',
                             type=str,
-                            default='./data_csv/Validation/concatenate.csv',
+                            default='./data_csv_new/Validation/all_05.csv',
                             help='test file')
 
         parser.add_argument('--batch_size',
                             type=int,
-                            default=14,
+                            default=16,
                             help='')
         parser.add_argument('--max_len',
                             type=int,
@@ -116,12 +116,12 @@ class Base(pl.LightningModule):
 class KoBARTConditionalGeneration(Base):
     def __init__(self, hparams, trainer=None, **kwargs):
         super(KoBARTConditionalGeneration, self).__init__(hparams, trainer, **kwargs)
-        self.model = BartForConditionalGeneration.from_pretrained('gogamza/kobart-base-v1')
+        self.model = BartForConditionalGeneration.from_pretrained('gogamza/kobart-base-v2')
         self.model.train()
         self.bos_token = '<s>'
         self.eos_token = '</s>'
         
-        self.tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v1')
+        self.tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v2')
         self.pad_token_id = self.tokenizer.pad_token_id
 
     def forward(self, inputs):
