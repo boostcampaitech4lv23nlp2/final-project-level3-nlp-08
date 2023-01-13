@@ -5,6 +5,7 @@ import torch
 from transformers.models.bart import BartForConditionalGeneration
 from transformers import PreTrainedTokenizerFast
 from tqdm import tqdm
+from rdass import rdass
 
 def load_model():
     model = BartForConditionalGeneration.from_pretrained('./models/kobart_summary_concatenate_new')
@@ -23,8 +24,8 @@ for context, summary in zip(test_data['context'], test_data['summary']):
     summarys.append(summary)
 
 num = len(contexts)
-
-rouge_1, rouge_2, rouge_l = 0, 0, 0
+print(num)
+rouge_1, rouge_2, rouge_l, rdass_score = 0, 0, 0, 0
 for c, s in tqdm(zip(contexts, summarys)):
     input_ids = tokenizer.encode(c)
     input_ids = torch.tensor(input_ids)
@@ -37,9 +38,17 @@ for c, s in tqdm(zip(contexts, summarys)):
     rouge_1 += score['rouge-1']['f']
     rouge_2 += score['rouge-2']['f']
     rouge_l += score['rouge-l']['f']
+    rdass_score += rdass(output, s, c)
+
 
 rouge_1 /= num
 rouge_2 /= num
 rouge_l /= num
+rdass_score /= num
 
-print(f'ROUGE-1: {rouge_1} | ROUGE-2: {rouge_2} | ROUGE-L: {rouge_l}')
+print(f'ROUGE-1: {rouge_1} | ROUGE-2: {rouge_2} | ROUGE-L: {rouge_l} | RDASS: {rdass_score}')
+
+f = open('score_log.txt', 'w')
+data = 'ROUGE-1: ' + str(rouge_1) + ' | ROUGE-2: ' + str(rouge_2) + ' | ROUGE-L: ' + str(rouge_l) + ' | RDASS: ' + str(rdass_score)
+f.write(data)
+f.close()
