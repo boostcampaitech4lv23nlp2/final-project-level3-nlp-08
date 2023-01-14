@@ -10,3 +10,4 @@ pre_models
 test.txt
 *.pyc
 crall
+*_log.txt
