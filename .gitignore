@@ -1,0 +1,13 @@
+*.ipynb
+data
+data_csv
+data_csv_new
+*_use.sh
+*_use.py
+models
+pre_models
+*.json
+test.txt
+*.pyc
+crall
+*_log.txt
