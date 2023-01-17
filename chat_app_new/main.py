@@ -1,15 +1,37 @@
 from fastapi import (
-    FastAPI, WebSocket, WebSocketDisconnect, Request, Response
+    FastAPI, WebSocket, WebSocketDisconnect, Request, Response, Depends
 )
 from typing import List
-from pydantic import BaseModel
+from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic import BaseModel, Field
 from fastapi.templating import Jinja2Templates
+from mongodb import get_nosql_db, connect_to_mongo, close_mongo_connection
+from config import MONGODB_NAME
+from bson import ObjectId
+from datetime import datetime
+import logging
 
 app = FastAPI()
 
 # locate templates
 templates = Jinja2Templates(directory="templates")
 
+
+@app.on_event('startup')
+async def startup_event():
+    await connect_to_mongo()
+    client = await get_nosql_db()
+    db = client[MONGODB_NAME]
+
+    try:
+        message_collection = db.messages
+    except pymongo.errors.CollectionInvalid as e:
+        logging.info(e)
+        pass
+
+@app.on_event('shutdown')
+async def shutdown_event():
+    await close_mongo_connection()
 
 @app.get("/")
 def get_home(request: Request):
@@ -56,8 +78,11 @@ class SocketManager:
 manager = SocketManager()
 
 @app.websocket("/api/chat")
-async def chat(websocket: WebSocket):
+async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_nosql_db)):
     sender = websocket.cookies.get("X-Authorization")
+    db = client[MONGODB_NAME]
+    collection = db.messages
+    
     if sender:
         await manager.connect(websocket, sender)
         response = {
@@ -65,15 +90,34 @@ async def chat(websocket: WebSocket):
             "message": "got connected"
         }
         await manager.broadcast(response)
+        print(response)
         try:
             while True:
                 data = await websocket.receive_json()
+                print(data)
+                res = await stack_message(data, collection)
                 await manager.broadcast(data)
+                
         except WebSocketDisconnect:
             manager.disconnect(websocket, sender)
             response['message'] = "left"
             await manager.broadcast(response)
 
+class Message(BaseModel):
+    username: str
+    message: str = None
+
+class MessageInDB(Message):
+    _id: ObjectId
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+async def stack_message(data, collection):
+    messages = {}
+    messages['username'] = data['sender']
+    messages['message'] = data['message']
+
+    dbmessage = MessageInDB(**messages)
+    response = await collection.insert_one(dbmessage.dict())
 if __name__ == '__main__':
     import uvicorn
 
