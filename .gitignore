@@ -11,3 +11,4 @@ test.txt
 *.pyc
 crall
 *_log.txt
+*.cpp
