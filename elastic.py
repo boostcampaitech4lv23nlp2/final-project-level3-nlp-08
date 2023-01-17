@@ -109,7 +109,7 @@ class ElasticObject:
 
             print("Data Loding...")
             for v in data['posts']:
-                if self._check_docs(url=v['url'], index_name=index_name):
+                if not self._check_docs(url=v['url'], index_name=index_name):
                     doc = {
                         "_index": index_name,
                         "_type": "_doc",
