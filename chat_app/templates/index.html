@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>실시간 채팅 시스템</title>
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700", type="text/css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+
+        <!-- Compiled and minified CSS-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+        <!-- Compiled and minified JavaScript-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    </head>
+    <body>
+        <nav>
+            <div class="nav-wrapper" style="background: #54C6EB">
+                <div class="container">
+                    <a href="#" class="brand-logo">실시간 채팅 시스템</a>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <form name="chat-form" action="" onsubmit="sendMessage(event)">
+                <div style="overflow: hidden; padding-right: .7em;">
+                    <input type="text" id="mesageText" autocomplete="off"/>
+                </div>
+                <button class="btn waves-effect waves-light" type="submit" name="action" style="float:right; background-color: #54C6EB;">
+                    보내기<i class="material-icons right">send</i>
+                </button>
+            </form>
+
+            <ul id="messages">
+
+            </ul>
+        </div>
+        <script>
+            var room_name = window.location.pathname
+            console.log(room_name)
+            var ws = new WebSocket("ws://localohst:8000/ws/" + room_name);
+            ws.onmessage = function(event){
+                var messages = document.getElementById('messages')
+                var message = document.createElement('li')
+                var content = document.createTextNode(event.data)
+                message.setAttribute('class', 'message');
+                message.appendChild(content)
+                messages.appendChild(message)
+            };
+            function sendMessage(event){
+                var input = document.getElementById("messageText")
+                ws.send(input.value)
+                input.value = ''
+                event.preventDefault()
+            }
+        </script>
+        <style>
+        .message {
+                border-radius: 25px;
+                background: #06DA60;
+                padding: 2%;
+                margin: 2%;
+                width: 35%;
+                word-wrap: break-word;
+        }
+        </style>
+    </body>
+</html>
