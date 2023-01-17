@@ -11,4 +11,5 @@ test.txt
 *.pyc
 crall
 *_log.txt
-config.py
+/chat_app/config.py
+/chat_app_new/config.py
