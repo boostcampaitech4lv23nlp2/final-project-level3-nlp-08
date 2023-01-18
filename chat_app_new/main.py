@@ -10,7 +10,7 @@ from config import MONGODB_NAME
 from bson import ObjectId
 from datetime import datetime
 
-#import summary
+import summary
 import logging
 
 app = FastAPI()
@@ -107,7 +107,9 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                     context = "</s> <s>".join(message_list)
                     context = context + '</s>'
                     summary_context = summary.summarize(context)
-                    summary_data = {'sender': 'Bot', 'message': summary_context}
+                    notify_data = {'sender': 'Golden Reriever', 'message': '지금까지 나눈 대화 내용을 정리해봤어!'}
+                    summary_data = {'sender': 'Golden Retriever', 'message': summary_context}
+                    await manager.broadcast(notify_context)
                     await manager.broadcast(summary_data) 
                     collection.delete_many({})
                 await manager.broadcast(data)
