@@ -89,7 +89,7 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
         await manager.connect(websocket, sender)
         response = {
             "sender": sender,
-            "message": "got connected"
+            "message": "님이 접속하셨습니다."
         }
         await manager.broadcast(response)
         print(response)
@@ -100,6 +100,7 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                 messages = await get_messages()
                 message_list = get_message_list(messages)
                 context = ''
+                await manager.broadcast(data)
 
                 if len(message_list) == 15:
                     #대화가 15번 오가면 해당 대화를 요약해주고, DB에서 쌓인 메세지를 삭제한다.
@@ -112,11 +113,11 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                     await manager.broadcast(notify_context)
                     await manager.broadcast(summary_data) 
                     collection.delete_many({})
-                await manager.broadcast(data)
+                
                 
         except WebSocketDisconnect:
             manager.disconnect(websocket, sender)
-            response['message'] = "left"
+            response['message'] = "님이 퇴장하셨습니다."
             await manager.broadcast(response)
 
 class Message(BaseModel):
