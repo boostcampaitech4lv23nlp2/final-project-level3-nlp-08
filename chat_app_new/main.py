@@ -9,6 +9,8 @@ from mongodb import get_nosql_db, connect_to_mongo, close_mongo_connection
 from config import MONGODB_NAME
 from bson import ObjectId
 from datetime import datetime
+
+#import summary
 import logging
 
 app = FastAPI()
@@ -94,8 +96,20 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
         try:
             while True:
                 data = await websocket.receive_json()
-                print(data)
                 res = await stack_message(data, collection)
+                messages = await get_messages()
+                message_list = get_message_list(messages)
+                context = ''
+
+                if len(message_list) == 15:
+                    #대화가 15번 오가면 해당 대화를 요약해주고, DB에서 쌓인 메세지를 삭제한다.
+                    context = '<s>' + messages[0].message
+                    context = "</s> <s>".join(message_list)
+                    context = context + '</s>'
+                    summary_context = summary.summarize(context)
+                    summary_data = {'sender': 'Bot', 'message': summary_context}
+                    await manager.broadcast(summary_data) 
+                    collection.delete_many({})
                 await manager.broadcast(data)
                 
         except WebSocketDisconnect:
@@ -118,6 +132,25 @@ async def stack_message(data, collection):
 
     dbmessage = MessageInDB(**messages)
     response = await collection.insert_one(dbmessage.dict())
+
+async def get_messages():
+    client = await get_nosql_db()
+    db = client[MONGODB_NAME]
+    collection = db.messages
+
+    rows = collection.find()
+    row_list = []
+    async for row in rows:
+        row_list.append(MessageInDB(**row))
+    
+    return row_list
+
+def get_message_list(message_list):
+    res = []
+    for message in message_list:
+        res.append(message.message)
+    
+    return res
 if __name__ == '__main__':
     import uvicorn
 
