@@ -21,7 +21,9 @@ from transformers import (
 
 def set_columns(dataset):
     dataset = pd.DataFrame(
-        {"context": dataset["context"], "query": dataset["question"], "title": dataset["title"]}
+        {"context": dataset["context"], "query": dataset["question"], "title": dataset["title"],
+        "ground_truth":dataset['ground_truth']
+        }
     )
 
     return dataset

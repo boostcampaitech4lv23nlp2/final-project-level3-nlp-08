@@ -12,6 +12,7 @@ import torch
 import numpy as np
 from transformers import AutoTokenizer, set_seed
 from datasets import load_from_disk
+#from collections import OrderedDict
 
 def main():
     epoch = 10
@@ -20,7 +21,7 @@ def main():
     datasets = load_from_disk("../../json_data/wiki_ict_dataset")
     val_dataset = pd.DataFrame(datasets["validation"])
     
-    val_dataset = val_dataset[:201]
+    val_dataset = val_dataset[:240]
 
     val_dataset = val_dataset.reset_index(drop=True)
     val_dataset = set_columns(val_dataset)
@@ -31,7 +32,7 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    model.load_state_dict(torch.load(f"./best_model/compare_colbert_epoch3.pth"))
+    model.load_state_dict(torch.load(f"./best_model/colbert.pth"))
 
     print("opening wiki passage...")
     with open("../../json_data/wiki_data/wikipedia_documents.json", "r", encoding="utf-8") as f:
@@ -40,7 +41,7 @@ def main():
     print("wiki loaded!!!")
 
     query = list(val_dataset["query"])
-    ground_truth = list(val_dataset["context"])
+    ground_truth = list(val_dataset["ground_truth"]) #if using ict_dataset -> #list(val_dataset["ground_truth"])
 
     batched_p_embs = []
     with torch.no_grad():
@@ -75,7 +76,7 @@ def main():
     print(dot_prod_scores)
     print(rank)
     print(rank.size())
-    torch.save(rank, f"./rank/rank_epoch{epoch}.pth")
+    torch.save(rank, f"./rank/test_ODQA_dataset{epoch}.pth")
 
     k = 5
     score = 0
