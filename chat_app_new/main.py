@@ -104,8 +104,7 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                 context = ''
                 await manager.broadcast(data)
 
-                if len(message_list) == 10:
-                    #대화가 15번 오가면 해당 대화를 요약해주고, DB에서 쌓인 메세지를 삭제한다.
+                if get_message_list_token(message_list) >= 10:
                     context = '<s>' + messages[0].message
                     context = "</s> <s>".join(message_list)
                     context = context + '</s>'
@@ -167,6 +166,13 @@ def get_message_list(message_list):
         res.append(message.message)
     
     return res
+
+def get_message_list_token(message_list):
+    cnt = 0
+    for message in message_list:
+        cnt += len(message.split(' '))
+    
+    return cnt
 
 def get_elastic_list(elastic_list):
     titles, urls = [], []
