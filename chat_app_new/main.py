@@ -9,11 +9,13 @@ from mongodb import get_nosql_db, connect_to_mongo, close_mongo_connection
 from config import MONGODB_NAME
 from bson import ObjectId
 from datetime import datetime
+from Elastic import elastic
 
 import summary
 import logging
 
 app = FastAPI()
+es = elastic.ElasticObject("localhost:9200")
 
 # locate templates
 templates = Jinja2Templates(directory="templates")
@@ -102,16 +104,27 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                 context = ''
                 await manager.broadcast(data)
 
-                if len(message_list) == 15:
+                if len(message_list) == 10:
                     #대화가 15번 오가면 해당 대화를 요약해주고, DB에서 쌓인 메세지를 삭제한다.
                     context = '<s>' + messages[0].message
                     context = "</s> <s>".join(message_list)
                     context = context + '</s>'
                     summary_context = summary.summarize(context)
-                    notify_data = {'sender': 'Golden Reriever', 'message': '지금까지 나눈 대화 내용을 정리해봤어!'}
+
+                    notify_data = {'sender': 'Golden Retriever', 'message': '지금까지 나눈 대화 내용을 정리해봤어!'}
+                    await manager.broadcast(notify_data)
+
                     summary_data = {'sender': 'Golden Retriever', 'message': summary_context}
-                    await manager.broadcast(notify_context)
-                    await manager.broadcast(summary_data) 
+                    await manager.broadcast(summary_data)
+                    
+                    elastic_list = es.search('naver_docs', summary_context)
+                    titles, urls = get_elastic_list(elastic_list)
+
+                    notify_data_2 = {'sender': 'Golden Retriever', 'message': '이런 내용이 필요할 것 같은데, 어때?'}
+                    await manager.broadcast(notify_data_2)
+                    elastic_data = {'sender': 'Golden Retriever', 'message': titles[0], 'url': urls[0], 'hyperlink': 0}
+                    await manager.broadcast(elastic_data)
+
                     collection.delete_many({})
                 
                 
@@ -154,6 +167,20 @@ def get_message_list(message_list):
         res.append(message.message)
     
     return res
+
+def get_elastic_list(elastic_list):
+    titles, urls = [], []
+    cnt = 0
+    for elastic in elastic_list:
+        titles.append(elastic['_source']['title'])
+        urls.append(elastic['_source']['url'])
+        cnt += 1
+
+        if cnt == 3:
+            break
+    
+    return titles, urls
+
 if __name__ == '__main__':
     import uvicorn
 
