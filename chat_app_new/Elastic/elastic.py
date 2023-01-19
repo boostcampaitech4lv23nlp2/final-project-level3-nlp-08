@@ -201,7 +201,5 @@ if __name__ == "__main__":
     es.create_index('blog_data', setting_path='./settings.json')
     es.insert_data('blog_data', data_path ='./elastic_data')
     
-    # outputs = es.search('naver_documents', "후쿠오카")
-    
         
         
