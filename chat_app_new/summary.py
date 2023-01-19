@@ -3,11 +3,11 @@ from transformers.models.bart import BartForConditionalGeneration
 from transformers import PreTrainedTokenizerFast
 
 def load_model():
-    model = BartForConditionalGeneration.from_pretrained('../models/summary_model')
+    model = BartForConditionalGeneration.from_pretrained('papari1123/summary_bart_dual_R3F_aihub')
     return model
 
 model = load_model()
-tokenizer = PreTrainedTokenizerFast.from_pretrained('gogamza/kobart-base-v2')
+tokenizer = PreTrainedTokenizerFast.from_pretrained('papari1123/summary_bart_dual_R3F_aihub')
 
 def summarize(text):
     input_ids = tokenizer.encode(text)
