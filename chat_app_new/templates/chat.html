@@ -63,8 +63,15 @@
                     if (sender == current_user) 
                         sender = "You";
                     var message = data['message']
-                    var content = "<p><strong>" + sender + " </strong> <span> " + message + "</span" +
-                            "></p>";
+                    var hyperlink = data['hyperlink']
+                    var url = data['url']
+                    if (hyperlink == 0){
+                        var content = "<p><strong>" + sender + " </strong> <span> " + '<a href="' + url +'" target="_blank">' + message + "</a>" + "</span" + "></p>";
+                    }
+                    else{
+                        var content = "<p><strong>" + sender + " </strong> <span> " + message + "</span" + "></p>";
+                    }
+                    
                     parent.append(content);
                 };
                 $("#chat-form").on("submit", function (e) {
