@@ -3,7 +3,7 @@ from transformers.models.bart import BartForConditionalGeneration
 from transformers import PreTrainedTokenizerFast
 
 def load_model():
-    model = BartForConditionalGeneration.from_pretrained('../models/kobart_summary_concatenate_new_data')
+    model = BartForConditionalGeneration.from_pretrained('../models/summary_model')
     return model
 
 model = load_model()
