@@ -47,8 +47,8 @@ for keyword in keywords:
     def scroll_down(driver):
         driver.execute_script("window.scrollTo(0, 99999999)")
         time.sleep(1)
-    n = 0 
-    i = 70
+    n = 70 
+    i = 0
     while i < n: #스크롤당 30
         scroll_down(driver)
         i = i+1
@@ -71,7 +71,7 @@ for keyword in keywords:
     #    title_list.append(title)
     number = len(url_list)
     blogli=[]
-    for i in tqdm(range(0, 3)):
+    for i in tqdm(range(0, number)):
         # 글 띄우기
         url = url_list[i]
         
