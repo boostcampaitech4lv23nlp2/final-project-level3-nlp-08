@@ -27,7 +27,7 @@ def run_colbert_retrieval(datasets, model_args, training_args, top_k=10):
     MODEL_NAME = "klue/bert-base"
 
     print("opening wiki passage...")
-    with open("./data/wikipedia_documents.json", "r", encoding="utf-8") as f:
+    with open("../../json_data/wiki_data/wikipedia_documents.json", "r", encoding="utf-8") as f:
         wiki = json.load(f)
     context = list(dict.fromkeys([v["text"] for v in wiki.values()]))
     #========================================================================

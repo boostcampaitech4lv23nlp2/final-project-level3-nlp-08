@@ -4,6 +4,7 @@ import numpy as np
 from tqdm import tqdm, trange
 import argparse
 import random
+import re
 import torch
 import torch.nn.functional as F
 from transformers import (
@@ -18,6 +19,10 @@ from transformers import (
 
 # baseline : https://github.com/boostcampaitech3/level2-mrc-level2-nlp-11
 
+def preprocess(text):
+    text = re.sub(r"[^A-Za-z0-9가-힣.?!,()~‘’“”"":&<>·\-\'+\s]", "", text)
+    text = re.sub(r"\s+", " ", text).strip()  # 두 개 이상의 연속된 공백을 하나로 치환
+    return text   
 
 def set_columns(dataset):
     dataset = pd.DataFrame(
@@ -42,7 +47,7 @@ def tokenize_colbert(dataset, tokenizer, corpus):
     if corpus == "query":
         preprocessed_data = []
         for query in dataset:
-            preprocessed_data.append("[Q] " + query)
+            preprocessed_data.append("[Q] " + preprocess(query))
 
         tokenized_query = tokenizer(
             preprocessed_data, return_tensors="pt", padding=True, truncation=True, max_length=128
@@ -50,7 +55,7 @@ def tokenize_colbert(dataset, tokenizer, corpus):
         return tokenized_query
 
     elif corpus == "doc":
-        preprocessed_data = "[D] " + dataset
+        preprocessed_data = "[D] " + preprocess(dataset)
         tokenized_context = tokenizer(
             preprocessed_data,
             return_tensors="pt",
@@ -63,7 +68,7 @@ def tokenize_colbert(dataset, tokenizer, corpus):
     elif corpus == "bm25_hard":
         preprocessed_context = []
         for context in dataset:
-            preprocessed_context.append("[D] " + context)
+            preprocessed_context.append("[D] " + preprocess(context))
         tokenized_context = tokenizer(
             preprocessed_context,
             return_tensors="pt",
@@ -76,8 +81,8 @@ def tokenize_colbert(dataset, tokenizer, corpus):
         preprocessed_query = []
         preprocessed_context = []
         for query, context in zip(dataset["query"], dataset["context"]):
-            preprocessed_context.append("[D] " + context)
-            preprocessed_query.append("[Q] " + query)
+            preprocessed_context.append("[D] " + preprocess(context))
+            preprocessed_query.append("[Q] " + preprocess(query))
         tokenized_query = tokenizer(
             preprocessed_query, return_tensors="pt", padding=True, truncation=True, max_length=128
         )

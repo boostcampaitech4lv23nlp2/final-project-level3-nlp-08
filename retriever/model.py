@@ -71,7 +71,7 @@ class ColbertModel(BertPreTrainedModel):
                     ]  # (batch_size,batch_size,q_sequnce_length)
                     score = torch.sum(max_dot_prod_score, dim=2)  # (batch_size,batch_size)
                     final_score = torch.cat([final_score, score], dim=1)
-                print(final_score.size())
+                print("final_score!! :",final_score.size())
                 return final_score
 
         else:

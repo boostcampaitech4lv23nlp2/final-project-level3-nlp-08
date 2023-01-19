@@ -2,3 +2,6 @@ retriever/best_model/
 retriever/wandb/
 retriever/__pycache__/
 retriever/rank
+retriever/blog_model
+retriever/blog_second_model
+retriever/blog_preprocess_model
