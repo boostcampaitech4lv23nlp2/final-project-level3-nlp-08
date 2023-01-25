@@ -4,11 +4,15 @@ import json
 import warnings
 from glob import glob
 import os
+import random
 
 warnings.filterwarnings("ignore")
 
-
 class ElasticObject:
+    
+    summary_messages = ["지금까지 대화한 내용을 요약해 봤어!"]
+    recommend_messages = ["내가 추천해 주는 글이 도움이 될거야!"]
+    
     def __init__(self, host: str, port: Optional[str] = None) -> None:
         """
         엘라스틱서치 커넥션 클래스
@@ -169,12 +173,9 @@ class ElasticObject:
     def search(self, index_name: str, question: str, topk: int = 10):
 
         body = {
-            "sort": [
-                {
-                    "like": "desc"
-                    },
-                "_score"
-                ]
+            "_source": {
+                "includes": ["title", "url", "like"]
+            }
             ,
             "query": 
                 {
@@ -183,7 +184,7 @@ class ElasticObject:
                             [
                                 {"match": 
                                     {
-                                        "context": question
+                                        "content": "제주도"
                                         }
                                     }
                                 ]
@@ -192,17 +193,30 @@ class ElasticObject:
                 }
 
         responses = self.client.search(index=index_name, body=body, size=topk)["hits"]["hits"]
-
-        return responses
+        responses=sorted(responses, key=lambda x:-int(x['_source']['like']))
+        
+        
+        random_summary_idx = random.randint(0, len(self.summary_messages))
+        random_recommend_idx = random.randint(0, len(self.recommend_messages))
+        
+        api_output = {
+            "location": "recommend",
+            "summary_message": self.summary_messages[random_summary_idx],
+            "summary": question,
+            "recommend_message": self.recommend_messages[random_recommend_idx],
+            "source": responses
+        }
+        
+        return responses, api_output
 
 
 if __name__ == "__main__":
 
     es = ElasticObject("localhost:9200")
-    es.create_index('naver_docs', setting_path='./settings.json')
-    es.insert_data('naver_docs')
+    # es.create_index('blogs', setting_path='./settings.json')
     
-    # outputs = es.search('naver_documents', "후쿠오카")
+    outputs = es.search('blogs', "후쿠오카")
+    print(outputs)
     
         
         

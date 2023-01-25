@@ -27,7 +27,7 @@
     
     "mappings": {
         "properties": {
-            "context": {
+            "content": {
                 "type": "text",
                 "analyzer": "my_analyzer",
                 "similarity": "my_similarity"
