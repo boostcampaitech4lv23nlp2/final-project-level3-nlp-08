@@ -1,1 +1,0 @@
-python train.py --gradient_clip_val 1.0 --max_epochs 5 --default_root_dir {DEFAULT_ROOT_DIR} --gpus 1 --batch_size 4 --num_workers 4

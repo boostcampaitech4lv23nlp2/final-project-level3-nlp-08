@@ -1,0 +1,36 @@
+path:
+    train_path: ./datas/Training/all.csv
+    dev_path: ./datas/Validation/all_dual_05.csv
+    predict_path: ./datas/Validation/all_dual_05.csv
+
+# TODO
+exp:
+    exp_name : dialog_R3F_only_dual_new_only_R3F # 변경 해야함!! 실험 이름
+    project_name : sglee_sum # 변경 해야함!! 실험 공간 ex) Moongi_exp
+
+# TODO    
+model:
+    model_name: gogamza/kobart-summarization
+    mode_load_path: None
+trainer:
+    mode: 'blend' # base, blend
+    kl_div_lambda: 0.1
+    
+train:
+    loss_name : 'focal'
+    gpus: 1
+    batch_size: 8
+    max_epoch: 10
+    learning_rate: 4e-5
+    logging_step: 25
+    save_total_limit : 5 # number of total save model.
+    save_steps : 5000 # model saving step.
+    warmup_steps : 30000 # number of warmup steps for learning rate scheduler
+    weight_decay : 0.01 # strength of weight decay
+    logging_steps : 25  # log saving step.
+    eval_steps : 5000 # evaluation step
+
+
+test:
+    model_dir : None
+    prediction : None
