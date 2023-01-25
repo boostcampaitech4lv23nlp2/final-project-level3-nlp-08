@@ -76,7 +76,7 @@ def main():
     print(dot_prod_scores)
     print(rank)
     print(rank.size())
-    torch.save(rank, f"./rank/blogs_dataset{epoch}.pth")
+    torch.save(rank, f"./rank/blogs_with_wiki_dataset{epoch}.pth")
 
     k = 5
     score = 0

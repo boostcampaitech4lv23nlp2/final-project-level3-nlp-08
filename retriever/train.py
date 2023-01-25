@@ -30,11 +30,11 @@ def main():
 
     set_seed(42)
 
-    batch_size = 16
-    load_weight_path = "./best_model/colbert.pth" #False #"./best_model_aug/colbert_epoch10.pth"
-    data_path = "../../json_data/blogs_ict_dataset"
+    batch_size = 8
+    load_weight_path = False #"./best_model/colbert.pth" #False #"./best_model_aug/colbert_epoch10.pth"
+    data_path = "../../json_data/wiki_ict_dataset"
 
-    lr = 4e-6
+    lr = 5e-5
     args = TrainingArguments(
         output_dir="dense_retrieval",
         evaluation_strategy="epoch",
@@ -68,7 +68,7 @@ def main():
 
     print("dataset tokenizing.......")
     # 토크나이저
-    train_context, train_query = tokenize_colbert(train_dataset, tokenizer, corpus="both")
+    train_context, train_query = tokenize_colbert(train_dataset, tokenizer ,corpus="both")
     #train_bm25 = tokenize_colbert(bm25rank_contexts, tokenizer, corpus="bm25_hard")
 
     train_dataset = TensorDataset(
@@ -96,7 +96,7 @@ def main():
 
     print("model train...")
     trained_model = train(args, train_dataset, model)
-    torch.save(trained_model.state_dict(), "blog_preprocess_model/fine_tuned_blog_colbert.pth")
+    torch.save(trained_model.state_dict(), "roberta_model/roberta_colbert.pth")
 
 
 def train(args, dataset, model):
@@ -146,7 +146,6 @@ def train(args, dataset, model):
 
             if torch.cuda.is_available():
                 batch = tuple(t.cuda() for t in batch)
-
             p_inputs = {
                 "input_ids": batch[0],
                 "attention_mask": batch[1],
@@ -186,7 +185,7 @@ def train(args, dataset, model):
             torch.cuda.empty_cache()
         final_loss = total_loss / len(dataset)
         print("total_loss :", final_loss)
-        torch.save(model.state_dict(), f"./blog_preprocess_model/compare_blog_colbert_epoch{epoch+1}.pth")
+        #torch.save(model.state_dict(), f"./roberta_model/compare_colbert_epoch{epoch+1}.pth")
 
     return model
 

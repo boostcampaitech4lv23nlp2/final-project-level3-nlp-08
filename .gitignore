@@ -5,3 +5,5 @@ retriever/rank
 retriever/blog_model
 retriever/blog_second_model
 retriever/blog_preprocess_model
+retriever/roberta_model
+retriever/.ipynb_checkpoints

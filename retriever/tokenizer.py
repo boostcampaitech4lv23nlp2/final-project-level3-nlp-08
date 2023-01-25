@@ -20,6 +20,7 @@ from transformers import (
 # baseline : https://github.com/boostcampaitech3/level2-mrc-level2-nlp-11
 
 def preprocess(text):
+    text = re.sub("\n"," ",text)
     text = re.sub(r"[^A-Za-z0-9가-힣.?!,()~‘’“”"":&<>·\-\'+\s]", "", text)
     text = re.sub(r"\s+", " ", text).strip()  # 두 개 이상의 연속된 공백을 하나로 치환
     return text   
@@ -41,7 +42,7 @@ def load_tokenizer(MODEL_NAME):
     return tokenizer
 
 
-def tokenize_colbert(dataset, tokenizer, corpus):
+def tokenize_colbert(dataset, tokenizer ,corpus):
 
     # for inference
     if corpus == "query":
@@ -50,7 +51,7 @@ def tokenize_colbert(dataset, tokenizer, corpus):
             preprocessed_data.append("[Q] " + preprocess(query))
 
         tokenized_query = tokenizer(
-            preprocessed_data, return_tensors="pt", padding=True, truncation=True, max_length=128
+            preprocessed_data, return_tensors="pt", padding=True, truncation=True, max_length=128,
         )
         return tokenized_query
 
