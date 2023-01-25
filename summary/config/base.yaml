@@ -1,7 +1,7 @@
 path:
     train_path: ./datas/Training/all.csv
     dev_path: ./datas/Validation/all_dual_05.csv
-    predict_path: ./datas/Validation/all_dual_05.csv
+    predict_path: ./datas/Test/all_dual_05.csv
 
 # TODO
 exp:
@@ -31,5 +31,6 @@ train:
 
 
 test:
-    model_dir : None
-    prediction : None
+    # pytorch_model.bin을 불러올 경우, pytorch_model.bin을 경로에 포함할 것
+    # huggingface에서 KoBART 가중치를 직접 불러올 경우, 해당 경로를 입력할 것. EX) papari1123/summary_bart_dual_R3F_aihub
+    model_path : "papari1123/summary_bart_dual_R3F_aihub"

@@ -2,15 +2,17 @@
 
 ## develop_summary용 How to run
 
+### Train
+```commandLine
+python train.py --config {config}
 ```
-train.sh
-get_model_binary.sh
-inference.py
+- config옵션을 주지 않을 경우, config/base.yaml이 실행됨.
+- 실험 환경 세팅은 yaml 파일을 변경함.
+
+### Inference
+```commandLine
+python test.py --config {config} --data {data_path} --model_path {model_path}
 ```
-순서로 진행하면 됩니다.
-
-train.sh: model의 하이퍼파라미터(hparams)와 model_binary를 default_root_dir에 저장
-get_model_binary.sh: 하이퍼파라미터와 model_binary를 huggingface form의 from_pretrained method에 사용할 수 있게끔 config.json과 pytorch_model.bin 파일을 생성
-inference.py: 코드 6번째 줄의 경로를 get_model_binary.sh의 output_dir에 저장된 모델로 수정해서 사용
-
-각 sh file에 있는 대괄호 내의 내용은 사용자가 직접 수정하여 사용
+- config 옵션을 주지 않을 경우, config/base.yaml이 실행됨.
+- data 옵션을 주지 않을 경우, config/base.yaml의 predict_path를 불러옴.
+- model_path 옵션을 주지 않을 경우, config/base.yaml의 model_path를 불러옴.
