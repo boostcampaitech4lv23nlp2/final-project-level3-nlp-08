@@ -12,3 +12,11 @@ test.txt
 crall
 *_log.txt
 *.cpp
+
+__pycache__
+
+summary/saved
+summary/results
+summary/datas
+wandb
+nohup.out
