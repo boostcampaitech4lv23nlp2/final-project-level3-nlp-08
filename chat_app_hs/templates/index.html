@@ -348,7 +348,7 @@
       });
       
       
-      var socket = new WebSocket("ws://localhost:8000/api/chat");
+      var socket = new WebSocket("ws://27.96.131.204:30001/api/chat");
       socket.onmessage = function (event) {
         
         var data = JSON.parse(event.data);
@@ -362,7 +362,7 @@
 
           var li_list = ""
           source.forEach(function (el, index) {
-            li_list = li_list + '<li class="url_list"><a href='+el['url']+'>'+el['title']+'</a></li>'
+            li_list = li_list + '<li class="url_list"><a href='+el['url']+' target="_blank">'+el['title']+'</a></li>'
           })
           
           var content = '<div class="item">'+'<div class="box">'+'<img src="assets/recomend_icon.png" width="50px" class="rec_icon">'+'<div class="msg">'+'<p>' +message+'</p>'+li_list+'</div>'+'</div>'+'</div>'
