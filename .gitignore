@@ -8,3 +8,9 @@ retriever/blog_preprocess_model
 retriever/roberta_model
 retriever/.ipynb_checkpoints
 retriever/only_blog
+# Jupyter
+*.ipynb
+__pycache__
+
+# monstache
+build/
