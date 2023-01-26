@@ -32,7 +32,7 @@ def main():
 
     batch_size = 8
     load_weight_path = False #"./best_model/colbert.pth" #False #"./best_model_aug/colbert_epoch10.pth"
-    data_path = "../../json_data/wiki_ict_dataset"
+    data_path = "../../json_data/new_blogs_ict_dataset"
 
     lr = 5e-5
     args = TrainingArguments(
@@ -96,7 +96,7 @@ def main():
 
     print("model train...")
     trained_model = train(args, train_dataset, model)
-    torch.save(trained_model.state_dict(), "roberta_model/roberta_colbert.pth")
+    torch.save(trained_model.state_dict(), "only_blog/only_blog_colbert.pth")
 
 
 def train(args, dataset, model):
@@ -184,8 +184,9 @@ def train(args, dataset, model):
             global_step += 1
             torch.cuda.empty_cache()
         final_loss = total_loss / len(dataset)
+        wandb.log({"final_loss":final_loss})
         print("total_loss :", final_loss)
-        #torch.save(model.state_dict(), f"./roberta_model/compare_colbert_epoch{epoch+1}.pth")
+        torch.save(model.state_dict(), f"./only_blog/compare_colbert_epoch{epoch+1}.pth")
 
     return model
 
