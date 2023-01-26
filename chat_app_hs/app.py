@@ -96,7 +96,7 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
         response = {
             "location": "chat",
             "sender": sender,
-            "message": "접속하셨습니다."
+            "message": sender + " 님이 접속하셨습니다."
         }
         await manager.broadcast(response)
 
@@ -108,8 +108,16 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                 message_list = get_message_list(messages)
                 context = ''
 
-                await manager.broadcast(data)
                 
+                if data['recommend'] == 'True':
+                    elastic_list = es.search('final_data', data['message'])
+                    sources = get_elastic_list(elastic_list)
+
+                    recommend_message = "# " + data['message']
+                    recommend_data = {'location': 'recommend', 'sender': 'Golden Retriever', 'message': recommend_message, 'source': sources}
+                    await manager.broadcast(recommend_data)
+                else:
+                    await manager.broadcast(data)
                 if get_message_list_token(message_list) >= 30 or (manager.check_recommend() and get_message_list_token(message_list)) >= 50:
                     context = '<s>' + messages[0].message
                     context = "</s> <s>".join(message_list)
@@ -131,7 +139,7 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                                  
         except WebSocketDisconnect:
             manager.disconnect(websocket, sender)
-            response['message'] = "left"
+            response['message'] = sender + "님이 접속을 종료했습니다."
             await manager.broadcast(response)
 
 class Message(BaseModel):

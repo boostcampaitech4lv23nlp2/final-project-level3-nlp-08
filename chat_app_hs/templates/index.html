@@ -140,10 +140,6 @@
       margin-right: 10px;
     }
 
-
-
-
-
     .main .url_wrap {
       display: inline-block;
       background-color: rgb(249, 215, 149);
@@ -226,12 +222,6 @@
       margin-top: 10px;
     }
 
-
-
-
-    
-
-
     .main .sum_wrap {
       display: inline-block;
       background-color: rgb(249, 215, 149);
@@ -311,15 +301,9 @@
       text-align: left;
     }
 
-
-
-
-
-
-
     input[type="text"] {
       border:0;;
-      width: 90%;
+      width: 80%;
       background: rgb(235, 234, 234);
       border-radius: 5px;
       height: 30px;
@@ -328,18 +312,25 @@
       margin-top: 20px;
     }
 
-    
     input[type="text"]::placeholder{color: #999;}
 
     button[type="submit"] {
-      position: absolute;
       margin-top: 20px;
       height: 30px;
       border-radius: 5px;
       width: 70px;
     }
+    
+    .btn-submit {
+      position: static;
+    }
+    .btn-recommend{
+      position: static;
+    }
+
   </style>
   <script>
+
     $(document).ready(function () {
       var current_user;
       $.get("/api/current_user", function (response) {
@@ -405,14 +396,30 @@
         },10)
 
       };
-      $("#chat-form").on("submit", function (e) {
+      $("#chat-form").on("click", "#send", function (e) {
         e.preventDefault();
         var message = $("input").val();
         if (message) {
           data = {
             "location": "chat",
             "sender": current_user,
-            "message": message
+            "message": message,
+            "recommend": "False"
+          };
+          socket.send(JSON.stringify(data));
+          $("input").val("");
+          document.cookie = 'X-Authorization=; path=/;';
+        }
+      })
+      $("#chat-form").on("click", "#rec_send", function (e) {
+        e.preventDefault();
+        var message = $("input").val();
+        if (message) {
+          data = {
+            "location": "chat",
+            "sender": current_user,
+            "message": message,
+            "recommend": "True"
           };
           socket.send(JSON.stringify(data));
           $("input").val("");
@@ -440,7 +447,8 @@
       </div>
     <form class="form-inline" id="chat-form">
       <input type="text" class="mymsg" placeholder="메세지를 입력해주세요.">
-      <button id="send" type="submit" class="btn" style="float: right;">전송</button>
+      <button id="send" type="submit" class="btn-submit" style="float: right;">전송</button>
+      <button id="rec_send" type="submit" class="btn-recommend" style="float: right;">추천</button>
     </form>
     </div>
     
