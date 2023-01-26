@@ -10,8 +10,8 @@ warnings.filterwarnings("ignore")
 
 class ElasticObject:
     
-    summary_messages = ["지금까지 대화한 내용을 요약해 봤어!"]
-    recommend_messages = ["내가 추천해 주는 글이 도움이 될거야!"]
+    summary_messages = ["지금까지 대화한 내용을 요약해 봤어!", "멍멍멍멍멍멍(대충 요약했다는 뜻)", "너네 이런 대화했지? 맞췄지? 잘했지?"]
+    recommend_messages = ["내가 추천해 주는 글이 도움이 될거야!", "내가 열심히 찾아봤다 멍멍!", "이게 좋겠다!", "멍머멍(대충 문서를 가져왔다는 뜻)"]
     
     def __init__(self, host: str, port: Optional[str] = None) -> None:
         """
@@ -91,13 +91,13 @@ class ElasticObject:
     def insert_data(
         self,
         index_name: str,
-        data_path: str = "../data",
+        data_path: str,
     ):
         """_summary_
 
         Args:
             index_name (str): Name of an index
-            data_path (str): Path of the Document file or dir
+            data_path (str): Path of the Document file(json) or dir
         """
         if os.path.isdir(data_path):
             data_list = glob(data_path + '/*.json')
@@ -184,7 +184,7 @@ class ElasticObject:
                             [
                                 {"match": 
                                     {
-                                        "content": "제주도"
+                                        "content": question
                                         }
                                     }
                                 ]
@@ -196,8 +196,8 @@ class ElasticObject:
         responses=sorted(responses, key=lambda x:-int(x['_source']['like']))
         
         
-        random_summary_idx = random.randint(0, len(self.summary_messages))
-        random_recommend_idx = random.randint(0, len(self.recommend_messages))
+        random_summary_idx = random.randint(0, len(self.summary_messages)-1)
+        random_recommend_idx = random.randint(0, len(self.recommend_messages)-1)
         
         api_output = {
             "location": "recommend",
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     es = ElasticObject("localhost:9200")
     # es.create_index('blogs', setting_path='./settings.json')
     
-    outputs = es.search('blogs', "후쿠오카")
+    outputs = es.search('blogs', "여수시수여수 여수의 여수는 여수여수와 여수를 함께 하고 있다.")
     print(outputs)
     
         

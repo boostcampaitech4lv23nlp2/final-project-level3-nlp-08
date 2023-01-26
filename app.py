@@ -9,7 +9,8 @@ import datetime
 
 import uvicorn
 
-from src.elasticsearch.elastic import ElasticObject
+from src.elastic.elastic import ElasticObject
+import requests
 
     
 app = FastAPI()
@@ -47,7 +48,7 @@ class SummaryModel:
     def __init__(self) -> None:
         
         # TODO
-        self.summary_output = {"summary": "제주도에 맛집을 찾고 있다. 어디서 묵는게 좋은지 생각하고 있다."}
+        self.summary_output = "제주도에 맛집을 찾고 있다. 어디서 묵는게 좋은지 생각하고 있다."
     
     async def inference(self):
         return self.summary_output
@@ -56,10 +57,9 @@ class SummaryModel:
 models = SummaryModel()
 elastic_connector = ElasticObject("localhost:9200")
 
-async def summary_retrieve():
+async def summary_retrieve(summary):
     
-    summary_output = await models.inference()
-    _, outputs = await elastic_connector.search(index_name="blogs", question=summary_output, topk=5)
+    _, outputs = elastic_connector.search(index_name="blogs", question=summary['answer'], topk=5)
     
     return outputs
 
@@ -94,7 +94,6 @@ manager = SocketManager()
 @app.websocket("/api/chat")
 async def chat(websocket: WebSocket):
     sender = websocket.cookies.get("X-Authorization")
-    print(sender)
     if sender:
         await manager.connect(websocket, sender)
         response = {
@@ -107,12 +106,12 @@ async def chat(websocket: WebSocket):
         try:
             while True:
                 data = await websocket.receive_json()
-                print(data)
                 messages += data['message']
                 await manager.broadcast(data)
                 
                 if len(messages) >= 100 or (manager.check_recommend() and len(messages) > 70):
-                    outputs = await summary_retrieve()
+                    summary_output = requests.post("http://localhost:8502", json={"text": messages}).json()
+                    outputs = await summary_retrieve(summary_output)
                     
                     messages = ""
                     await manager.broadcast(outputs)
