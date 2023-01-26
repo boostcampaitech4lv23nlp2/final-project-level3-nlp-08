@@ -9,8 +9,11 @@ def load_model():
     )
     return model
 
-
+device = torch.device("cuda")
 model = load_model()
+model.to(device)
+model.eval()
+
 tokenizer = PreTrainedTokenizerFast.from_pretrained(
     "papari1123/summary_bart_dual_R3F_aihub"
 )
@@ -19,7 +22,7 @@ tokenizer = PreTrainedTokenizerFast.from_pretrained(
 def summarize(text):
     input_ids = tokenizer.encode(text)
     input_ids = torch.tensor(input_ids)
-    input_ids = input_ids.unsqueeze(0)
+    input_ids = input_ids.unsqueeze(0).cuda()
     output = model.generate(
         input_ids,
         repetition_penalty=2.0, # default is 1.
