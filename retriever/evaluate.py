@@ -18,10 +18,10 @@ def main():
     epoch = 10
     MODEL_NAME = "klue/bert-base"
     set_seed(42)
-    datasets = load_from_disk("../../json_data/blogs_ict_dataset")
+    datasets = load_from_disk("../../json_data/new_blogs_ict_dataset")
     val_dataset = pd.DataFrame(datasets["validation"])
     
-    #val_dataset = val_dataset[:240]
+    val_dataset = val_dataset[:240]
 
     val_dataset = val_dataset.reset_index(drop=True)
     val_dataset = set_columns(val_dataset)
@@ -32,12 +32,12 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    model.load_state_dict(torch.load(f"./blog_preprocess_model/fine_tuned_blog_colbert.pth"))
+    model.load_state_dict(torch.load(f"./only_blog/only_blog_colbert.pth"))
 
     print("opening wiki passage...")
-    with open("../../json_data/blogs_data/blogs_data.json", "r", encoding="utf-8") as f:
+    with open("../../json_data/blogs_data/new_blogs_data.json", "r", encoding="utf-8") as f:
         wiki = json.load(f)
-    context = list(dict.fromkeys([v["content"] for v in wiki.values()]))
+    context = list(dict.fromkeys([v["context"] for v in wiki.values()]))
     print("wiki loaded!!!")
 
     query = list(val_dataset["query"])
@@ -60,7 +60,7 @@ def main():
             p = tokenize_colbert(p, tokenizer, corpus="doc").to("cuda")
             p_emb = model.doc(**p).to("cpu").numpy()
             p_embs.append(p_emb)
-            if (step + 1) % 200 == 0:
+            if (step + 1) % 100 == 0:
                 batched_p_embs.append(p_embs)
                 p_embs = []
         batched_p_embs.append(p_embs)
@@ -76,7 +76,7 @@ def main():
     print(dot_prod_scores)
     print(rank)
     print(rank.size())
-    torch.save(rank, f"./rank/blogs_with_wiki_dataset{epoch}.pth")
+    torch.save(rank, f"./rank/only_blog{epoch}.pth")
 
     k = 5
     score = 0
