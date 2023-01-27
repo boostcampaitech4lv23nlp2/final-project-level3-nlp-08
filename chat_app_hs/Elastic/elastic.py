@@ -166,7 +166,7 @@ class ElasticObject:
         print(f"Number of documents to {index_name} is {counts}.")
         return counts
 
-    def search(self, index_name: str, question: str, topk: int = 10):
+    def search(self, index_name: str, question: str, topk: int = 1000):
         body = {
             "query": 
                 {
