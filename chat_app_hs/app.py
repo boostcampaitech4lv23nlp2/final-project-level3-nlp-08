@@ -9,6 +9,7 @@ from Elastic import elastic
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 from config import MONGODB_NAME
+from retriever.utils import *
 
 from datetime import datetime
 import summary
@@ -19,6 +20,9 @@ import uvicorn
 app = FastAPI()
 es = elastic.ElasticObject('localhost:9200')
 #app.mount("/assets", app=StaticFiles(directory="assets"), name='assets')
+
+r_tokenizer = AutoTokenizer.from_pretrained("LeeHJ/colbert_blog")
+r_model = AutoModel.from_pretrained("LeeHJ/colbert_blog")
 
 templates = Jinja2Templates(directory='templates')
 
@@ -118,6 +122,7 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                     await manager.broadcast(recommend_data)
                 else:
                     await manager.broadcast(data)
+
                 if get_message_list_token(message_list) >= 30 or (manager.check_recommend() and get_message_list_token(message_list)) >= 50:
                     context = '<s>' + messages[0].message
                     context = "</s> <s>".join(message_list)
@@ -128,9 +133,35 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                     summary_data = {'location': 'summary', 'sender': 'Golden Retriever', 'message': summary_message}
                     await manager.broadcast(summary_data)
                     
-                    elastic_list = es.search('final_data', summary_context)
-                    sources = get_elastic_list(elastic_list)
+                    #elastic_list = es.search('final_data', summary_context)
+                    #sources = get_elastic_list(elastic_list)
+                    
+                    outputs = es.search('final_data', summary_context)
+                    contexts = [output['_source']['context'] for output in outputs]
+                    urls = [output['_source']['url'] for output in outputs]
+                    
+                    batched_p_embs = []
 
+                    #블로그 글 임베딩하기
+                    with torch.no_grad():
+                        print("Start passage embedding......")
+                        p_embs = []
+                        for step, p in enumerate(tqdm(contexts)):
+                            p = tokenize_colbert(p, tokenizer, corpus="doc").to("cuda")
+                            p_emb = model.doc(**p).to("cpu").numpy()
+                            p_embs.append(p_emb)
+                            if (step + 1) % 200 == 0: # TODO 배치 단위 부분.
+                                batched_p_embs.append(p_embs)
+                                p_embs = []
+                        batched_p_embs.append(p_embs)
+                    with torch.no_grad():
+                        model.eval()
+                        q_seqs_val = tokenize(query, tokenizer).to("cuda")
+                        q_emb = model.query(**q_seqs_val).to("cpu")
+                    dot_prod_scores = get_score(q_emb, batched_p_embs, eval=True)
+                    rank = torch.argsort(dot_prod_scores, dim=1, descending=True).squeeze()
+                    
+                    sources = rank[:3] #TODO
                     recommend_message = "이것도 읽어봐라 멍멍!!"
                     recommend_data = {'location': 'recommend', 'sender': 'Golden Retriever', 'message': recommend_message, 'source': sources}
                     await manager.broadcast(recommend_data)
