@@ -10,6 +10,8 @@ import datetime
 import uvicorn
 
 from src.elastic.elastic import ElasticObject
+from urllib import parse
+
 import requests
 
     
@@ -30,7 +32,7 @@ def read_chat(request: Request):
 
 @app.get("/api/current_user")
 def get_user(request: Request):
-    return request.cookies.get("X-Authorization")
+    return parse.unquote(request.cookies.get("X-Authorization"))
 
 class RegisterValidator(BaseModel):
     username: str
@@ -40,7 +42,7 @@ class RegisterValidator(BaseModel):
         
 @app.post("/api/register")
 def register_user(user: RegisterValidator, response: Response):
-    response.set_cookie(key="X-Authorization", value=user.username, httponly=True)
+    response.set_cookie(key="X-Authorization", value=parse.quote(user.username), httponly=True)
     
     
     
@@ -94,6 +96,7 @@ manager = SocketManager()
 @app.websocket("/api/chat")
 async def chat(websocket: WebSocket):
     sender = websocket.cookies.get("X-Authorization")
+    sender = parse.unquote(sender)
     if sender:
         await manager.connect(websocket, sender)
         response = {

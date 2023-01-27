@@ -18,6 +18,25 @@
       height: 100%;
     }
 
+    @font-face {
+      font-family: 'm-Nanum Gothic';
+      font-style: italic;
+      src: url("../assets/fonts/NanumGothic-Bold.ttf") format('truetype');
+      unicode-range: U+AC00-D7A3;
+    }
+
+    @font-face {
+      font-family: 'l-Raleway';
+      src: url('../assets/fonts/Raleway-ExtraBoldItalic.ttf') format('truetype');
+      unicode-range: U+0041-005A;
+    }
+
+    @font-face {
+      font-family: 's-Raleway';
+      src: url('../assets/fonts/Raleway-ExtraBoldItalic.ttf') format('truetype');
+      unicode-range:  U+0061-007A;
+    }
+
     .header {
       height: 8%;
       margin-top: 10px;
@@ -36,7 +55,6 @@
       padding: 0%;
       margin-left: 10%;
       box-shadow: 0px 0px 5px gray;
-      font-family: 'Noto Sans KR', sans-serif;
     }
 
     .main .chat_wrap {
@@ -52,8 +70,8 @@
     }
 
     .main .chat_wrap .chat_title {
+      font-family: 'm-Nanum Gothic', 'l-Raleway', 's-Raleway';
       margin-bottom: 15px;
-      font-family: 'Raleway', sans-serif;
     }
 
     .main .chat_wrap .inner {
@@ -112,7 +130,7 @@
       text-align: center;
       line-height: 35px;
       font-size: 15px;
-      font-family: 'Raleway', sans-serif;
+      font-family: 'm-Nanum Gothic', 'l-Raleway', 's-Raleway';
       overflow: hidden;
     }
 
