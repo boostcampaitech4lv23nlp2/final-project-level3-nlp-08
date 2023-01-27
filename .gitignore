@@ -11,3 +11,12 @@ test.txt
 *.pyc
 crall
 *_log.txt
+# Jupyter
+*.ipynb
+__pycache__
+
+# monstache
+build/
+
+# nohup
+*.out

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>여행 채팅방</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link id="favicon" rel="icon" href="assets/favicon.ico" type="image/x-icon", sizes="16x16">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:ital,wght@1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+  
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    .header {
+      height: 8%;
+      margin-top: 10px;
+      font-size: 50px;
+      text-align: center;
+      padding: 10px;
+      font-family: 'Raleway', sans-serif;
+      vertical-align: middle;
+    }
+
+    .main {
+      background-color: rgb(227, 183, 93);
+      border-radius: 5px;
+      width: 80%;
+      height: 85%;
+      padding: 0%;
+      margin-left: 10%;
+      box-shadow: 0px 0px 5px gray;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .main .chat_wrap {
+      float: left;
+      background-color: rgb(249, 215, 149);
+      box-shadow: 0px 0px 5px gray;
+      margin-top: 5%;
+      margin-left: 5%;
+      padding: 10px;
+      width: 50%;
+      height: 80%;
+      border-radius: 5px;
+    }
+
+    .main .chat_wrap .chat_title {
+      margin-bottom: 15px;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .main .chat_wrap .inner {
+      display:inline-block;
+      width: 100%;
+      height: 80%;
+      box-shadow: 0px 0px 5px gray;
+      background-color: rgb(248, 226, 196);
+      overflow-y: scroll;
+    }
+
+    .main .chat_wrap .inner .item {
+      padding: 5px;
+      
+    }
+
+    .main .chat_wrap .inner .item:first-child{
+      margin-top: 0;
+    }
+
+    .main .chat_wrap .inner .item .box{
+      display: inline-block;
+      max-width: 400px;
+      position: relative;
+      word-break: break-word;
+    }
+
+    .main .chat_wrap .item .box {
+      transition: all .3s ease-out;
+      margin: 0 0 0 20px;
+      opacity: 0;
+    }
+
+    .main .chat_wrap .item.mymsg .box {
+      margin: 0 20px 0 0;
+    }
+
+    .main .chat_wrap .item.on .box {margin: 0; opacity: 1;}
+
+    .main .chat_wrap .inner .item .box:before {
+      content: "";
+      position: absolute;
+      left: 42px;
+      top: 15px;
+      border-top:0px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-right: 8px solid #fff;
+    }
+
+    .main .chat_wrap .inner .item .box .circle {
+      float: left;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #fff;
+      text-align: center;
+      line-height: 35px;
+      font-size: 15px;
+      font-family: 'Raleway', sans-serif;
+      overflow: hidden;
+    }
+
+    .main .chat_wrap .inner .item .box .msg {
+      margin-left: 50px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px;
+      margin-top: 8px;
+      text-align: left;
+    }
+
+    .main .chat_wrap .inner .item.mymsg {
+      text-align: right;
+    }
+    .main .chat_wrap .inner .item.mymsg .box:before {
+      left: auto;
+      right: 2px;
+      border-left: 8px solid rgb(241, 181, 0);
+      border-right: 10px;
+    }
+
+    .main .chat_wrap .inner .item.mymsg .box .msg {
+      background: rgb(241, 181, 0);
+      margin-right: 10px;
+    }
+
+
+
+
+
+    .main .url_wrap {
+      display: inline-block;
+      background-color: rgb(249, 215, 149);
+      box-shadow: 0px 0px 5px gray;
+      margin-top: 5%;
+      margin-left: 15px;
+      padding: 10px;
+      width: 35%;
+      height: 80%;
+      border-radius: 5px;
+    }
+
+    .main .url_wrap .url_title {
+      font-family: 'Raleway', sans-serif;
+      margin-bottom: 15px;
+    }
+
+    .main .url_wrap .inner {
+      box-shadow: 0px 0px 5px gray;
+      background-color: rgb(248, 226, 196);
+      overflow-y: scroll;
+      width: 100%;
+      height: 90%;
+      border-radius: 5px;
+      word-break: break-word;
+    }    
+
+    .main .url_wrap .inner .item {
+      padding: 5px;
+    }
+
+    .main .url_wrap .inner .item:first-child {
+      margin-top: 0;
+    }
+
+    .main .url_wrap .inner .item .box {
+      display: inline-block;
+      max-width: 450px;
+      position: relative;
+    }
+
+    .main .url_wrap .inner .item .box {
+      transition: all .3s ease-out;
+      margin: 0 0 0 20px;
+      opacity: 0;
+    }
+
+    .main .url_wrap .inner .item.on .box {
+      margin: 0; opacity: 1;
+    }
+
+    .main .url_wrap .inner .item .box:before {
+      content: "";
+      position: absolute;
+      left: 62px;
+      top: 15px;
+      border-top:0px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-right: 8px solid #fff;
+    }
+
+    .main .url_wrap .inner .item .box .rec_icon {
+      float: left;
+      width: 50px;
+      border-radius: 50%;
+      background: #fff;
+      margin-left: 5px;
+    }
+
+    .main .url_wrap .inner .item .box .msg {
+      margin-left: 70px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px;
+      margin-top: 8px;
+      text-align: left;
+    }
+
+    .main .url_wrap .inner .item .box .msg {
+      margin-left: 70px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px;
+      margin-top: 8px;
+      text-align: left;
+    }
+
+    .main .url_wrap .inner .item .box .rec_message {
+      border-top: 2px dashed rgb(235, 222, 222);
+      padding: 10px;
+    }
+
+    .main .url_wrap .inner .item .box .summary {
+      font-family: 'Nanum Gothic', sans-serif;
+      margin: 15px;
+      padding: 10px;
+      background-color: rgba(229, 231, 166, 0.853);
+      box-shadow: 0px 0px 3px gray;
+      border-radius: 5px;
+    }
+
+
+    ul.url_list li {
+      list-style: none;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      padding: 5px;
+      border-bottom: 2px solid rgb(235, 222, 222);
+      width: 95%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+
+    input[type="text"] {
+      border:0;;
+      width: 90%;
+      background: rgb(235, 234, 234);
+      border-radius: 5px;
+      height: 30px;
+      padding-left: 5px;
+      box-sizing: border-box;
+      margin-top: 20px;
+    }
+
+    
+    input[type="text"]::placeholder{color: #999;}
+
+    button[type="submit"] {
+      position: absolute;
+      margin-top: 20px;
+      height: 30px;
+      border-radius: 5px;
+      width: 70px;
+    }
+  </style>
+  <script>
+    $(document).ready(function () {
+      var current_user;
+      $.get("/api/current_user", function (response) {
+        current_user = response;
+        $("#profile").text("(My ID : " + current_user + ")");
+      });
+      
+      
+      var socket = new WebSocket("ws://27.96.135.32:30001/api/chat");
+      socket.onmessage = function (event) {
+        
+        var data = JSON.parse(event.data);
+        var location = data['location'];
+
+        if (location == 'recommend') {
+          var parent = $('.url_wrap .inner')
+          var summary_message = data['summary_message']
+          var recommend_message = data['recommend_message']
+          var source = data['source']
+          var summary = data['summary']
+
+          var li_list = "<ul class='url_list'>"
+          source.forEach(function (el, index) {
+            li_list = li_list + '<li><a href='+el['_source']['url']+'>'+el['_source']['title']+'</a></li>'
+          })
+          li_list = li_list + "</ul>"
+          
+          var content = '<div class="item">'+'<div class="box">'+'<img src="assets/recomend_icon.png" width="50px" class="rec_icon">'+'<div class="msg">'+summary_message+'<br>'+'<p class="summary">'+summary+'</p>'+'<p class="rec_message">' +recommend_message+'</p>'+li_list+'</div>'+'</div>'+'</div>'
+
+        } else if (location == 'chat') {
+          var sender = data['sender'];
+          var parent = $(".chat_wrap .inner")
+
+          if (sender != current_user) {
+            var message = data['message']
+            var content = '<div class="item">'+'<div class="box">'+'<div class="circle" id="profile_circle">'+ sender +'</div>'+'<p class="msg">'+message+'</p>'+'</div>'+'</div>';
+          } else {
+            var message = data['message']
+            var content = '<div class="item mymsg">'+'<div class="box">'+'<p class="msg">'+ message +'</p>'+'</div>'+'</div>';
+          }
+          
+        }
+
+        parent.append(content)
+
+        $(".chat_wrap .inner").scrollTop($(".chat_wrap .inner").prop("scrollHeight"))
+        $(".url_wrap .inner").scrollTop($(".url_wrap .inner").prop("scrollHeight"))
+
+        setTimeout(function(){
+          $(".main .chat_wrap .inner").find(".item:last").addClass("on");
+        },10)
+
+        setTimeout(function(){
+          $(".main .url_wrap .inner").find(".item:last").addClass("on");
+        },10)
+
+
+      };
+
+      $("#chat-form").on("submit", function (e) {
+        e.preventDefault();
+        var message = $("input").val();
+        if (message) {
+          data = {
+            "location": "chat",
+            "sender": current_user,
+            "message": message
+          };
+          socket.send(JSON.stringify(data));
+          $("input").val("");
+          document.cookie = 'X-Authorization=; path=/;';
+        }
+      })
+    })
+    
+  </script>
+  
+</head>
+<body>
+  <div class="header">
+      <h1><img src="assets/title.png" width="50px">Travel Talk</h1>
+  </div>
+
+  <div class="main">
+    <div class="chat_wrap">
+      <div class="chat_title" style="font-size: 25px;"># chat
+        <strong id="profile"></strong>
+      </div>
+      <hr>
+      <div class="inner">
+        
+      </div>
+    <form class="form-inline" id="chat-form">
+      <input type="text" class="mymsg" placeholder="메세지를 입력해주세요.">
+      <button id="send" type="submit" class="btn" style="float: right;">전송</button>
+    </form>
+    </div>
+    
+
+    <div class="url_wrap">
+      <div class="url_title" style="font-size: 25px;"># Recommend</div>
+      <hr>
+      <div class="inner">
+        
+      </div>
+      
+    </div>
+
+  </div>
+  
+</body>
+</html>

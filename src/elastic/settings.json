@@ -1,0 +1,41 @@
+{
+    "settings" : {
+        "analysis" : {
+            "filter": {
+                "my_filter": {
+                    "type": "shingle",
+                    "min_shingle_size": 2,
+                    "max_shingle_size": 3
+                }
+            },
+            "analyzer": {
+                "my_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "nori_tokenizer",
+                    "filter": ["my_filter", "lowercase"]
+                }
+            }
+        },
+        "similarity": {
+            "my_similarity": {
+                "type": "BM25",
+                "k1": 2.0,
+                "b": 0.5
+            }
+        }
+    },
+    
+    "mappings": {
+        "properties": {
+            "content": {
+                "type": "text",
+                "analyzer": "my_analyzer",
+                "similarity": "my_similarity"
+            },
+            "like": {
+                "type": "integer",
+                "null_value": 0
+            }
+        }
+    }
+}
