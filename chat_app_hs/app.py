@@ -160,7 +160,7 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
 
                     with torch.no_grad():
                         r_model.eval()
-                        q_seqs_val = tokenize(contexts, r_tokenizer).to("cuda")
+                        q_seqs_val = tokenize(summary_context, r_tokenizer).to("cuda")
                         q_emb = r_model.query(**q_seqs_val).to("cpu")
 
                     dot_prod_scores = get_score(q_emb, batched_p_embs, eval=True)
