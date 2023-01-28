@@ -244,7 +244,14 @@
 
     .main .url_wrap .inner .item .box .rec_message {
       padding: 5px;
+      text-align: center;
     }
+
+    .main .url_wrap .inner .item .box .sum_message {
+      text-align: center;
+      margin-top: 10px;
+    }
+
 
     .main .url_wrap .inner .item .box .summary {
       font-family: 'Nanum Gothic', sans-serif;
@@ -264,9 +271,10 @@
       clear: left;
     }
 
-    #expand-menu {
-      display: none;
+    .expand-menu:hover {
+      color: gray;
     }
+
 
     ul.url_list li {
       list-style: none;
@@ -317,11 +325,11 @@
     }
 
     a:link {
-      color: rgb(124, 123, 119);
+      color: black;
     }
 
     a:visited {
-      color: black;
+      color: rgb(124, 123, 119);
     }
   </style>
   <script>
@@ -348,11 +356,26 @@
 
           var li_list = "<ul class='url_list'>"
           source.forEach(function (el, index) {
-            li_list = li_list + '<li><a href='+el['_source']['url']+'>'+el['_source']['title']+'</a></li>'
+            li_list = li_list + '<li><a href='+el['_source']['url']+' target=”_blank”>'+el['_source']['title']+'</a></li>'
           })
           li_list = li_list + "</ul>"
           
-          var content = '<div class="item">'+'<div class="box">'+'<img src="assets/recomend_icon.png" width="50px" class="rec_icon">'+'<div class="msg">'+summary_message+'<br>'+'<p class="summary">'+summary+'</p>'+'<label class="expand-menu"><div class="sidebar"><p class="rec_message">' +recommend_message+'</p>'+li_list+'</div></label></div></div>'
+          // var content = '<div class="item">'+'<div class="box">'+'<img src="assets/recomend_icon.png" width="50px" class="rec_icon">'+'<div class="msg">'+'<p class="sum_message">'+summary_message+'</p><br><p class="summary">'+summary+'</p>'+'<label class="expand-menu"><div class="sidebar"><p class="rec_message">' +recommend_message+'</p>'+li_list+'</div></label></div></div>'
+          var content = 
+          '<div class="item">'+
+            '<div class="box">'+
+              '<img src="assets/recomend_icon.png" width="50px" class="rec_icon">'+
+              '<div class="msg">'+
+                '<p class="sum_message">'+summary_message+'</p><br><p class="summary">'+summary+'</p>'+
+                '<label class="expand-menu">'+
+                '</label>'+
+                '<div class="sidebar">'+
+                  '<p class="rec_message">'+recommend_message+'</p>'+
+                  li_list+
+                '</div>'+
+              '</div>'+
+            '</div>'+
+          '</div>';  
         } else if (location == 'chat') {
           var sender = data['sender'];
           var parent = $(".chat_wrap .inner")
@@ -399,10 +422,11 @@
       })
 
       $(document).on("click", ".expand-menu", function () {
-        if($(this).children().css("display") == "none"){
-          $(this).children().show()
+        if($(this).next().css("display") == "none"){
+          $(this).next().show()
+          $(".url_wrap .inner").scrollTop($(".url_wrap .inner").prop("scrollHeight"))
         } else {
-          $(this).children().hide()
+          $(this).next().hide()
         }
       });
     });
