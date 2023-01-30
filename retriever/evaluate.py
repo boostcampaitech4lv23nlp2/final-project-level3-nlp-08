@@ -16,23 +16,24 @@ from datasets import load_from_disk
 
 def main():
     epoch = 10
-    MODEL_NAME = "klue/bert-base"
+    MODEL_NAME = "LeeHJ/colbert_blog"
     set_seed(42)
     datasets = load_from_disk("../../json_data/new_blogs_ict_dataset")
     val_dataset = pd.DataFrame(datasets["validation"])
     
-    val_dataset = val_dataset[:240]
+    #val_dataset = val_dataset[:240]
 
     val_dataset = val_dataset.reset_index(drop=True)
     val_dataset = set_columns(val_dataset)
 
-    tokenizer = load_tokenizer(MODEL_NAME)
+    #tokenizer = load_tokenizer(MODEL_NAME)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     model = ColbertModel.from_pretrained(MODEL_NAME)
-    model.resize_token_embeddings(tokenizer.vocab_size + 2)
+    #model.resize_token_embeddings(tokenizer.vocab_size + 2)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model.to(device)
 
-    model.load_state_dict(torch.load(f"./only_blog/only_blog_colbert.pth"))
+    #model.load_state_dict(torch.load(f"./only_blog/only_blog_colbert.pth"))
 
     print("opening wiki passage...")
     with open("../../json_data/blogs_data/new_blogs_data.json", "r", encoding="utf-8") as f:
@@ -60,7 +61,7 @@ def main():
             p = tokenize_colbert(p, tokenizer, corpus="doc").to("cuda")
             p_emb = model.doc(**p).to("cpu").numpy()
             p_embs.append(p_emb)
-            if (step + 1) % 100 == 0:
+            if (step + 1) % 50 == 0:
                 batched_p_embs.append(p_embs)
                 p_embs = []
         batched_p_embs.append(p_embs)
