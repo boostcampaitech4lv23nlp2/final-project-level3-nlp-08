@@ -14,3 +14,5 @@ __pycache__
 
 # monstache
 build/
+
+src/elasticsearch/elastic_data.json
