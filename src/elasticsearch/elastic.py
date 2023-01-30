@@ -112,7 +112,7 @@ class ElasticObject:
                 data = json.load(f)
 
             print("Data Loding...")
-            for v in data['posts']:
+            for v in data:
                 if not self._check_docs(url=v['url'], index_name=index_name):
                     doc = {
                         "_index": index_name,
@@ -122,7 +122,7 @@ class ElasticObject:
                         "context": v["content"],
                         "url": v['url'],
                         "copyright": v['copyright'],
-                        "like": int(v['like']) if v['like'] else 0
+                        "like":  int(v['like'].replace(",","")) if v['like'] else 0
                         
                     }
                     docs.append(doc)
@@ -184,7 +184,7 @@ class ElasticObject:
                             [
                                 {"match": 
                                     {
-                                        "content": "제주도"
+                                        "content": question
                                         }
                                     }
                                 ]
@@ -195,7 +195,7 @@ class ElasticObject:
         responses = self.client.search(index=index_name, body=body, size=topk)["hits"]["hits"]
         responses=sorted(responses, key=lambda x:-int(x['_source']['like']))
         
-        
+        """
         random_summary_idx = random.randint(0, len(self.summary_messages))
         random_recommend_idx = random.randint(0, len(self.recommend_messages))
         
@@ -206,8 +206,8 @@ class ElasticObject:
             "recommend_message": self.recommend_messages[random_recommend_idx],
             "source": responses
         }
-        
-        return responses, api_output
+        """
+        return responses #, api_output
 
 
 if __name__ == "__main__":
@@ -215,7 +215,10 @@ if __name__ == "__main__":
     es = ElasticObject("localhost:9200")
     # es.create_index('blogs', setting_path='./settings.json')
     
-    outputs = es.search('blogs', "후쿠오카")
+    #es.create_index('final_data', setting_path='./settings.json')
+    #es.insert_data('final_data', data_path ='./elastic_data.json')
+
+    outputs = es.search('final_data', "일본 오사카 맛집")
     print(outputs)
     
         
