@@ -193,8 +193,7 @@ class ElasticObject:
                 }
 
         responses = self.client.search(index=index_name, body=body, size=topk)["hits"]["hits"]
-        responses=sorted(responses, key=lambda x:-int(x['_source']['like']))
-        
+        responses = sorted(responses, key=lambda x:-int(x['_source']['like']) if x['_source'] else 0)
         
         random_summary_idx = random.randint(0, len(self.summary_messages)-1)
         random_recommend_idx = random.randint(0, len(self.recommend_messages)-1)

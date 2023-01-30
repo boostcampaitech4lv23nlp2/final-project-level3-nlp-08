@@ -13,13 +13,41 @@ from src.elastic.elastic import ElasticObject
 from urllib import parse
 
 import requests
-
-    
+import pprint
+elastic_connector = ElasticObject("localhost:9200")    
 app = FastAPI()
 
 app.mount("/assets", app=StaticFiles(directory="assets"), name='assets')
 
 templates = Jinja2Templates(directory='./templates')
+
+
+@app.on_event('startup')
+def make_history_index():
+    if not elastic_connector.client.indices.exists(index='chat-history'):
+        elastic_connector.create_index("chat-history", setting_path="./src/elastic/history_settings.json")
+            
+
+async def load_chat():
+    
+    body = {
+        "size": 1000,
+        "query": {
+            "match_all": {}
+        },
+        "sort": [
+            {
+                "date": {
+                    "order": "asc"
+                }
+            }
+        ]
+    }
+    resp = elastic_connector.client.search(index="chat-history", body=body)
+    
+    if resp['hits']['hits']:
+        for res in resp['hits']['hits']:
+            await manager.broadcast(res['_source'])
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -45,19 +73,6 @@ def register_user(user: RegisterValidator, response: Response):
     response.set_cookie(key="X-Authorization", value=parse.quote(user.username), httponly=True)
     
     
-    
-class SummaryModel:
-    def __init__(self) -> None:
-        
-        # TODO
-        self.summary_output = "제주도에 맛집을 찾고 있다. 어디서 묵는게 좋은지 생각하고 있다."
-    
-    async def inference(self):
-        return self.summary_output
-
-
-models = SummaryModel()
-elastic_connector = ElasticObject("localhost:9200")
 
 async def summary_retrieve(summary):
     
@@ -106,6 +121,7 @@ async def chat(websocket: WebSocket):
         }
         messages = ""
         await manager.broadcast(response)
+        await load_chat()
         try:
             while True:
                 data = await websocket.receive_json()
@@ -116,6 +132,9 @@ async def chat(websocket: WebSocket):
                     summary_output = requests.post("http://localhost:8502", json={"text": messages}).json()
                     outputs = await summary_retrieve(summary_output)
                     
+                    current_time = (datetime.datetime.now() - datetime.timedelta(hours=3)).strftime('%Y/%m/%d %H:%M:%S')
+                    outputs['date'] = current_time
+                    elastic_connector.client.index(index='chat-history', doc_type='_doc', body=outputs)
                     messages = ""
                     await manager.broadcast(outputs)
                         

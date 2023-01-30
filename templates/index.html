@@ -210,6 +210,10 @@
       opacity: 0;
     }
 
+    .main .url_wrap .inner .item .box {
+      margin: 0; opacity: 1;
+    }
+
     .main .url_wrap .inner .item.on .box {
       margin: 0; opacity: 1;
     }
@@ -262,17 +266,36 @@
       border-radius: 5px;
     }
 
+    .main .url_wrap .inner .item .time {
+      color: #999;
+      font-size: 15px;
+      margin-top: 5px;
+      margin-left: 75px;
+    }
 
-    label::before{
+
+    .expand-menu:before{
       font-family: 'Material Icons';
-      content: "\e5d2";
-      font-size: 1.5em;
+      content: "\e9d2";
+      font-size: 20px;
       float: left;
-      clear: left;
+    }
+
+    .expand-menu{
+      font-family: 'Material Icons';
+      content: "\e9d2";
+      position:absolute;
+      font-family: 'Nanum Gothic', sans-serif;
+      bottom: 5%;
+      display: table-cell;
+      vertical-align: middle;
+      
     }
 
     .expand-menu:hover {
       color: gray;
+      background-color: rgb(237, 237, 237);
+      border-radius: 5px;
     }
 
 
@@ -353,6 +376,7 @@
           var recommend_message = data['recommend_message']
           var source = data['source']
           var summary = data['summary']
+          var date = data['date']
 
           var li_list = "<ul class='url_list'>"
           source.forEach(function (el, index) {
@@ -367,15 +391,15 @@
               '<img src="assets/recomend_icon.png" width="50px" class="rec_icon">'+
               '<div class="msg">'+
                 '<p class="sum_message">'+summary_message+'</p><br><p class="summary">'+summary+'</p>'+
-                '<label class="expand-menu">'+
-                '</label>'+
+                '<div class="expand-menu">Recommend List</div>'+
                 '<div class="sidebar">'+
                   '<p class="rec_message">'+recommend_message+'</p>'+
                   li_list+
                 '</div>'+
               '</div>'+
             '</div>'+
-          '</div>';  
+            '<p class=time>'+date+'</p>'+
+          '</div>';
         } else if (location == 'chat') {
           var sender = data['sender'];
           var parent = $(".chat_wrap .inner")
@@ -424,11 +448,18 @@
       $(document).on("click", ".expand-menu", function () {
         if($(this).next().css("display") == "none"){
           $(this).next().show()
-          $(".url_wrap .inner").scrollTop($(".url_wrap .inner").prop("scrollHeight"))
+          //$(".url_wrap .inner").scrollTop($(".url_wrap .inner").scrollTop() + 124);
         } else {
           $(this).next().hide()
+          //$(".url_wrap .inner").scrollTop($(".url_wrap .inner").scrollTop() - 124);
         }
       });
+
+      $('html').click(function(e){
+        if (!$(e.target).hasClass("expand-menu")){
+          $(".expand-menu").next().hide()
+        }
+      })
     });
 
     
