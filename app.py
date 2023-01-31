@@ -76,7 +76,7 @@ def register_user(user: RegisterValidator, response: Response):
 
 async def summary_retrieve(summary):
     
-    _, outputs = elastic_connector.search(index_name="blogs", question=summary['answer'], topk=5)
+    _, outputs = elastic_connector.search(index_name="naver_docs", question=summary['answer'], topk=5)
     
     return outputs
 
@@ -130,13 +130,13 @@ async def chat(websocket: WebSocket):
                 
                 if len(messages) >= 100 or (manager.check_recommend() and len(messages) > 70):
                     summary_output = requests.post("http://localhost:8502", json={"text": messages}).json()
-                    outputs = await summary_retrieve(summary_output)
-                    
+                    outputs = requests.post("http://localhost:8503", json={"text": summary_output['answer']}).json()
+
                     current_time = (datetime.datetime.now() - datetime.timedelta(hours=3)).strftime('%Y/%m/%d %H:%M:%S')
-                    outputs['date'] = current_time
-                    elastic_connector.client.index(index='chat-history', doc_type='_doc', body=outputs)
+                    outputs['answer']['date'] = current_time
+                    elastic_connector.client.index(index='chat-history',  body=outputs['answer'])
                     messages = ""
-                    await manager.broadcast(outputs)
+                    await manager.broadcast(outputs['answer'])
                         
                 
         except WebSocketDisconnect:

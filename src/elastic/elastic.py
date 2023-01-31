@@ -174,7 +174,7 @@ class ElasticObject:
 
         body = {
             "_source": {
-                "includes": ["title", "url", "like"]
+                "includes": ["title", "url", "like","context"]
             }
             ,
             "query": 
@@ -184,7 +184,7 @@ class ElasticObject:
                             [
                                 {"match": 
                                     {
-                                        "content": question
+                                        "context": question #content context 구별 주의
                                         }
                                     }
                                 ]

@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>여행 채팅방</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <link id="favicon" rel="icon" href="assets/favicon.ico" type="image/x-icon", sizes="16x16">
+  <link id="favicon" rel="icon" href="assets/favicon.ico" type="image/x-icon" , sizes="16x16">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:ital,wght@1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Raleway:ital,wght@1,900&display=swap"
+    rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  
+
   <style>
     html,
     body {
@@ -35,7 +37,7 @@
     @font-face {
       font-family: 's-Raleway';
       src: url('../assets/fonts/Raleway-ExtraBoldItalic.ttf') format('truetype');
-      unicode-range:  U+0061-007A;
+      unicode-range: U+0061-007A;
     }
 
     .header {
@@ -76,7 +78,7 @@
     }
 
     .main .chat_wrap .inner {
-      display:inline-block;
+      display: inline-block;
       width: 100%;
       height: 80%;
       box-shadow: 0px 0px 5px gray;
@@ -86,14 +88,14 @@
 
     .main .chat_wrap .inner .item {
       padding: 5px;
-      
+
     }
 
-    .main .chat_wrap .inner .item:first-child{
+    .main .chat_wrap .inner .item:first-child {
       margin-top: 0;
     }
 
-    .main .chat_wrap .inner .item .box{
+    .main .chat_wrap .inner .item .box {
       display: inline-block;
       max-width: 400px;
       position: relative;
@@ -110,14 +112,17 @@
       margin: 0 20px 0 0;
     }
 
-    .main .chat_wrap .item.on .box {margin: 0; opacity: 1;}
+    .main .chat_wrap .item.on .box {
+      margin: 0;
+      opacity: 1;
+    }
 
     .main .chat_wrap .inner .item .box:before {
       content: "";
       position: absolute;
       left: 42px;
       top: 15px;
-      border-top:0px solid transparent;
+      border-top: 0px solid transparent;
       border-bottom: 8px solid transparent;
       border-right: 8px solid #fff;
     }
@@ -147,6 +152,7 @@
     .main .chat_wrap .inner .item.mymsg {
       text-align: right;
     }
+
     .main .chat_wrap .inner .item.mymsg .box:before {
       left: auto;
       right: 2px;
@@ -188,7 +194,7 @@
       height: 90%;
       border-radius: 5px;
       word-break: break-word;
-    }    
+    }
 
     .main .url_wrap .inner .item {
       margin-top: 50px;
@@ -211,11 +217,13 @@
     }
 
     .main .url_wrap .inner .item .box {
-      margin: 0; opacity: 1;
+      margin: 0;
+      opacity: 1;
     }
 
     .main .url_wrap .inner .item.on .box {
-      margin: 0; opacity: 1;
+      margin: 0;
+      opacity: 1;
     }
 
     .main .url_wrap .inner .item .box:before {
@@ -223,7 +231,7 @@
       position: absolute;
       left: 62px;
       top: 15px;
-      border-top:0px solid transparent;
+      border-top: 0px solid transparent;
       border-bottom: 8px solid transparent;
       border-right: 8px solid #fff;
     }
@@ -274,22 +282,22 @@
     }
 
 
-    .expand-menu:before{
+    .expand-menu:before {
       font-family: 'Material Icons';
       content: "\e9d2";
       font-size: 20px;
       float: left;
     }
 
-    .expand-menu{
+    .expand-menu {
       font-family: 'Material Icons';
       content: "\e9d2";
-      position:absolute;
+      position: absolute;
       font-family: 'Nanum Gothic', sans-serif;
       bottom: 5%;
       display: table-cell;
       vertical-align: middle;
-      
+
     }
 
     .expand-menu:hover {
@@ -304,9 +312,9 @@
       padding: 10px;
       vertical-align: middle;
       border-bottom: 2px dashed rgb(235, 222, 222);
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-family: 'Nanum Gothic', sans-serif;
     }
 
@@ -326,7 +334,8 @@
 
 
     input[type="text"] {
-      border:0;;
+      border: 0;
+      ;
       width: 90%;
       background: rgb(235, 234, 234);
       border-radius: 5px;
@@ -336,8 +345,10 @@
       margin-top: 20px;
     }
 
-    
-    input[type="text"]::placeholder{color: #999;}
+
+    input[type="text"]::placeholder {
+      color: #999;
+    }
 
     button[type="submit"] {
       position: absolute;
@@ -362,11 +373,11 @@
         current_user = response;
         $("#profile").text("(My ID : " + current_user + ")");
       });
-      
-      
-      var socket = new WebSocket("ws://27.96.135.32:30001/api/chat");
+
+
+      var socket = new WebSocket("ws://27.96.134.242:30001/api/chat");
       socket.onmessage = function (event) {
-        
+
         var data = JSON.parse(event.data);
         var location = data['location'];
 
@@ -380,38 +391,38 @@
 
           var li_list = "<ul class='url_list'>"
           source.forEach(function (el, index) {
-            li_list = li_list + '<li><a href='+el['_source']['url']+' target=”_blank”>'+el['_source']['title']+'</a></li>'
+            li_list = li_list + '<li><a href=' + el['_source']['url'] + ' target=”_blank”>' + el['_source']['title'] + '</a></li>'
           })
           li_list = li_list + "</ul>"
-          
+
           // var content = '<div class="item">'+'<div class="box">'+'<img src="assets/recomend_icon.png" width="50px" class="rec_icon">'+'<div class="msg">'+'<p class="sum_message">'+summary_message+'</p><br><p class="summary">'+summary+'</p>'+'<label class="expand-menu"><div class="sidebar"><p class="rec_message">' +recommend_message+'</p>'+li_list+'</div></label></div></div>'
-          var content = 
-          '<div class="item">'+
-            '<div class="box">'+
-              '<img src="assets/recomend_icon.png" width="50px" class="rec_icon">'+
-              '<div class="msg">'+
-                '<p class="sum_message">'+summary_message+'</p><br><p class="summary">'+summary+'</p>'+
-                '<div class="expand-menu">Recommend List</div>'+
-                '<div class="sidebar">'+
-                  '<p class="rec_message">'+recommend_message+'</p>'+
-                  li_list+
-                '</div>'+
-              '</div>'+
-            '</div>'+
-            '<p class=time>'+date+'</p>'+
-          '</div>';
+          var content =
+            '<div class="item">' +
+            '<div class="box">' +
+            '<img src="assets/recomend_icon.png" width="50px" class="rec_icon">' +
+            '<div class="msg">' +
+            '<p class="sum_message">' + summary_message + '</p><br><p class="summary">' + summary + '</p>' +
+            '<div class="expand-menu">Recommend List</div>' +
+            '<div class="sidebar">' +
+            '<p class="rec_message">' + recommend_message + '</p>' +
+            li_list +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '<p class=time>' + date + '</p>' +
+            '</div>';
         } else if (location == 'chat') {
           var sender = data['sender'];
           var parent = $(".chat_wrap .inner")
 
           if (sender != current_user) {
             var message = data['message']
-            var content = '<div class="item">'+'<div class="box">'+'<div class="circle" id="profile_circle">'+ sender +'</div>'+'<p class="msg">'+message+'</p>'+'</div>'+'</div>';
+            var content = '<div class="item">' + '<div class="box">' + '<div class="circle" id="profile_circle">' + sender + '</div>' + '<p class="msg">' + message + '</p>' + '</div>' + '</div>';
           } else {
             var message = data['message']
-            var content = '<div class="item mymsg">'+'<div class="box">'+'<p class="msg">'+ message +'</p>'+'</div>'+'</div>';
+            var content = '<div class="item mymsg">' + '<div class="box">' + '<p class="msg">' + message + '</p>' + '</div>' + '</div>';
           }
-          
+
         }
 
         parent.append(content)
@@ -419,13 +430,13 @@
         $(".chat_wrap .inner").scrollTop($(".chat_wrap .inner").prop("scrollHeight"))
         $(".url_wrap .inner").scrollTop($(".url_wrap .inner").prop("scrollHeight"))
 
-        setTimeout(function(){
+        setTimeout(function () {
           $(".main .chat_wrap .inner").find(".item:last").addClass("on");
-        },10)
+        }, 10)
 
-        setTimeout(function(){
+        setTimeout(function () {
           $(".main .url_wrap .inner").find(".item:last").addClass("on");
-        },10)
+        }, 10)
 
 
       };
@@ -446,7 +457,7 @@
       })
 
       $(document).on("click", ".expand-menu", function () {
-        if($(this).next().css("display") == "none"){
+        if ($(this).next().css("display") == "none") {
           $(this).next().show()
           //$(".url_wrap .inner").scrollTop($(".url_wrap .inner").scrollTop() + 124);
         } else {
@@ -455,21 +466,22 @@
         }
       });
 
-      $('html').click(function(e){
-        if (!$(e.target).hasClass("expand-menu")){
+      $('html').click(function (e) {
+        if (!$(e.target).hasClass("expand-menu")) {
           $(".expand-menu").next().hide()
         }
       })
     });
 
-    
-    
+
+
   </script>
-  
+
 </head>
+
 <body>
   <div class="header">
-      <h1><img src="assets/title.png" width="50px">Travel Talk</h1>
+    <h1><img src="assets/title.png" width="50px">Travel Talk</h1>
   </div>
 
   <div class="main">
@@ -479,25 +491,26 @@
       </div>
       <hr>
       <div class="inner">
-        
+
       </div>
-    <form class="form-inline" id="chat-form">
-      <input type="text" class="mymsg" placeholder="메세지를 입력해주세요.">
-      <button id="send" type="submit" class="btn" style="float: right;">전송</button>
-    </form>
+      <form class="form-inline" id="chat-form">
+        <input type="text" class="mymsg" placeholder="메세지를 입력해주세요.">
+        <button id="send" type="submit" class="btn" style="float: right;">전송</button>
+      </form>
     </div>
-    
+
 
     <div class="url_wrap">
       <div class="url_title" style="font-size: 25px;"># Recommend</div>
       <hr>
       <div class="inner">
-        
+
       </div>
-      
+
     </div>
 
   </div>
-  
+
 </body>
+
 </html>
