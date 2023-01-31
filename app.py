@@ -29,25 +29,27 @@ def make_history_index():
             
 
 async def load_chat():
-    
-    body = {
-        "size": 1000,
-        "query": {
-            "match_all": {}
-        },
-        "sort": [
-            {
-                "date": {
-                    "order": "asc"
+    try:
+        body = {
+            "size": 1000,
+            "query": {
+                "match_all": {}
+            },
+            "sort": [
+                {
+                    "date": {
+                        "order": "asc"
+                    }
                 }
-            }
-        ]
-    }
-    resp = elastic_connector.client.search(index="chat-history", body=body)
+            ]
+        }
+        resp = elastic_connector.client.search(index="chat-history", body=body)
+        if resp['hits']['hits']:
+            for res in resp['hits']['hits']:
+                await manager.broadcast(res['_source'])
+    except:
+        pass
     
-    if resp['hits']['hits']:
-        for res in resp['hits']['hits']:
-            await manager.broadcast(res['_source'])
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -141,7 +143,7 @@ async def chat(websocket: WebSocket):
                 
         except WebSocketDisconnect:
             manager.disconnect(websocket, sender)
-            response['message'] = "left"
+            response['message'] = "나가셨습니다."
             await manager.broadcast(response)
 
 if __name__ == "__main__":

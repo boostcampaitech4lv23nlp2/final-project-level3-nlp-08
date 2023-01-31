@@ -6,10 +6,10 @@ import time
 import json
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-tokenizer = PreTrainedTokenizerFast.from_pretrained("digit82/kobart-summarization")
+tokenizer = PreTrainedTokenizerFast.from_pretrained("papari1123/summary_bart_dual_R3F_aihub")
 
 def load_model():
-    bart_model = BartForConditionalGeneration.from_pretrained("digit82/kobart-summarization")
+    bart_model = BartForConditionalGeneration.from_pretrained("papari1123/summary_bart_dual_R3F_aihub")
     bart_model.to(device)
     bart_model.eval()
     
