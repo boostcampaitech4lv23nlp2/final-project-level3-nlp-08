@@ -117,7 +117,7 @@ async def chat(websocket: WebSocket):
         response = {
             "location": "chat",
             "sender": sender,
-            "message": "접속하셨습니다."
+            "message": sender + "님이 접속하셨습니다."
         }
         messages = ""
         await manager.broadcast(response)
@@ -125,7 +125,7 @@ async def chat(websocket: WebSocket):
         try:
             while True:
                 data = await websocket.receive_json()
-                messages += data['message']
+                messages += ('<s>' + data['message'] + '</s> ')
                 await manager.broadcast(data)
                 
                 if len(messages) >= 100 or (manager.check_recommend() and len(messages) > 70):
@@ -141,7 +141,7 @@ async def chat(websocket: WebSocket):
                 
         except WebSocketDisconnect:
             manager.disconnect(websocket, sender)
-            response['message'] = "left"
+            response['message'] = sender + "님이 떠나셨습니다."
             await manager.broadcast(response)
 
 if __name__ == "__main__":
