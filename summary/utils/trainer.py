@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 import torch.nn.functional as F
 import torch
 import wandb
-
+from .loss import FocalLoss
 
 class BaseTrainer(Trainer):
     def __init__(self, *args, **kwargs):
@@ -16,6 +16,21 @@ class BaseTrainer(Trainer):
         return (loss, outputs) if return_outputs else loss
 
 
+class SubTrainer(Trainer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def compute_loss(self, model, inputs, return_outputs=False):
+        outputs = model(inputs)
+        labels = inputs['labels']
+        logits = outputs["logits"]
+        loss_fct = FocalLoss()
+        loss = loss_fct(logits.view(-1, 20), labels.view(-1))
+        outputs['labels'] = labels
+        
+        return (loss, outputs) if return_outputs else loss
+    
+    
 class BlendTrainer(Trainer):
     def __init__(self, kl_div_lambda=0.1, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -4,7 +4,7 @@ import torch
 from transformers.models.bart import BartForConditionalGeneration
 from transformers import PreTrainedTokenizerFast, AutoTokenizer
 from tqdm import tqdm
-from utlis.rdass import sim
+from utils.rdass import sim
 from models import BaseModel
 
 from omegaconf import OmegaConf
@@ -99,4 +99,4 @@ if __name__ == "__main__":
     data_path = args.data if args.data else cfg.path.predict_path
 
     dataset = pd.read_csv(data_path)
-    test(model_path, dataset, len(dataset))
+    test(model_path, dataset, 1000)

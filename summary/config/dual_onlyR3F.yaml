@@ -32,5 +32,5 @@ train:
 
 
 test:
-    model_dir : None
+    model_path : saved/dialog_dual_only_R3F/checkpoint-135000/pytorch_model.bin
     prediction : None

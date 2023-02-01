@@ -1,13 +1,16 @@
 import torch
 import torch.nn.functional as F
-from utils.load_data import BlendKoBARTSummaryDataset
+from utils.load_data import KoBARTSubDataset, BlendKoBARTSummaryDataset
 from omegaconf import OmegaConf
 
-from utils.trainer import BaseTrainer, BlendTrainer
+from utils.trainer import SubTrainer
 from transformers import PreTrainedTokenizerFast, AutoConfig, TrainingArguments, Trainer
 
 
-from models import BaseModel
+from models import SubjectModel
+from utils.eval_metric import compute_metrics
+from utils.callback import SubjectCallback
+
 import argparse
 
 
@@ -29,11 +32,12 @@ def main(cfg):
         config=wandb_cfg,
     )
     # wandb setting end
-    train_data = BlendKoBARTSummaryDataset(cfg.path.train_path, cfg.model.model_name)
-    dev_data = BlendKoBARTSummaryDataset(cfg.path.dev_path, cfg.model.model_name)
+
+    train_data = KoBARTSubDataset(cfg.path.train_path, cfg.model.model_name, cfg.model.cls)
+    dev_data = KoBARTSubDataset(cfg.path.dev_path, cfg.model.model_name, cfg.model.cls)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = BaseModel(cfg.model.model_name)
+    model = SubjectModel(cfg.model.model_name)
     model.to(device)
     if cfg.model.mode_load_path != 'None':
         model.load_state_dict(
@@ -66,29 +70,24 @@ def main(cfg):
     )
 
     if cfg.trainer.mode == "base":
-        print("Use base trainer")
-        trainer = BaseTrainer(
+        print("Use sub trainer")
+        trainer = SubTrainer(
             model=model,
             args=training_args,
             train_dataset=train_data,
             eval_dataset=dev_data,
+            callbacks=[SubjectCallback],
+            compute_metrics=compute_metrics,  
         )
     else:
-        print("Use Blend trainer")
-        trainer = BlendTrainer(
-            model=model,
-            kl_div_lambda=cfg.trainer.kl_div_lambda,
-            args=training_args,
-            train_dataset=train_data,
-            eval_dataset=dev_data,
-        )
+        raise ValueError
     trainer.train()
 
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, default="base")
+    parser.add_argument("--config", type=str, default="sub_base")
     args, _ = parser.parse_known_args()
     cfg = OmegaConf.load(f"./config/{args.config}.yaml")
     main(cfg)

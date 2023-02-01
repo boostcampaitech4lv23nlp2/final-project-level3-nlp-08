@@ -18,5 +18,7 @@ __pycache__
 summary/saved
 summary/results
 summary/datas
+summary/*.html
+
 wandb
 nohup.out
