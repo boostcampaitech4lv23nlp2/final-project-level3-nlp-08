@@ -4,15 +4,11 @@ import json
 import warnings
 from glob import glob
 import os
-import random
 
 warnings.filterwarnings("ignore")
 
+
 class ElasticObject:
-    
-    summary_messages = ["지금까지 대화한 내용을 요약해 봤어!"]
-    recommend_messages = ["내가 추천해 주는 글이 도움이 될거야!"]
-    
     def __init__(self, host: str, port: Optional[str] = None) -> None:
         """
         엘라스틱서치 커넥션 클래스
@@ -113,20 +109,20 @@ class ElasticObject:
 
             print("Data Loding...")
             for v in data:
-                if not self._check_docs(url=v['url'], index_name=index_name):
-                    doc = {
+                #if not self._check_docs(url=v['url'], index_name=index_name):
+                #print(v['_id'])
+                doc = {
                         "_index": index_name,
                         "_type": "_doc",
-                        "_id": i+1,
+                        "_id": v['_id'],
                         "title": v["title"],
                         "context": v["content"],
                         "url": v['url'],
                         "copyright": v['copyright'],
-                        "like":  int(v['like'].replace(",","")) if v['like'] else 0
+                        "like": int(v['like'].replace(",","")) if v['like'] else 0
                         
                     }
-                    docs.append(doc)
-                    i += 1
+                docs.append(doc)
 
         helpers.bulk(self.client, docs)
 
@@ -170,13 +166,8 @@ class ElasticObject:
         print(f"Number of documents to {index_name} is {counts}.")
         return counts
 
-    def search(self, index_name: str, question: str, topk: int = 10):
-
+    def search(self, index_name: str, question: str, topk: int = 1000):
         body = {
-            "_source": {
-                "includes": ["title", "url", "like"]
-            }
-            ,
             "query": 
                 {
                     "bool": 
@@ -184,7 +175,7 @@ class ElasticObject:
                             [
                                 {"match": 
                                     {
-                                        "content": question
+                                        "context": question
                                         }
                                     }
                                 ]
@@ -193,33 +184,14 @@ class ElasticObject:
                 }
 
         responses = self.client.search(index=index_name, body=body, size=topk)["hits"]["hits"]
-        responses=sorted(responses, key=lambda x:-int(x['_source']['like']))
-        
-        """
-        random_summary_idx = random.randint(0, len(self.summary_messages))
-        random_recommend_idx = random.randint(0, len(self.recommend_messages))
-        
-        api_output = {
-            "location": "recommend",
-            "summary_message": self.summary_messages[random_summary_idx],
-            "summary": question,
-            "recommend_message": self.recommend_messages[random_recommend_idx],
-            "source": responses
-        }
-        """
-        return responses #, api_output
 
+        return responses
 
 if __name__ == "__main__":
 
     es = ElasticObject("localhost:9200")
-    # es.create_index('blogs', setting_path='./settings.json')
-    
-    #es.create_index('final_data', setting_path='./settings.json')
-    #es.insert_data('final_data', data_path ='./elastic_data.json')
+    es.create_index('final_data', setting_path='./settings.json')
+    es.insert_data('final_data', data_path ='./final_data.json')
 
-    outputs = es.search('final_data', "일본 오사카 맛집")
-    print(outputs)
-    
-        
-        
+    a=es.search('final_data',"일본 오사카 맛집")
+    print(a)

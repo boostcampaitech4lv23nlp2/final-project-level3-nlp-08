@@ -61,7 +61,7 @@ def main():
             p = tokenize_colbert(p, tokenizer, corpus="doc").to("cuda")
             p_emb = model.doc(**p).to("cpu").numpy()
             p_embs.append(p_emb)
-            if (step + 1) % 20 == 0:
+            if (step + 1) % 50 == 0:
                 batched_p_embs.append(p_embs)
                 p_embs = []
         batched_p_embs.append(p_embs)
