@@ -1,7 +1,7 @@
 from transformers import BartForConditionalGeneration, PreTrainedTokenizerFast
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import sys
-sys.path.append('/opt/ml/clonef/src/elastic')
+sys.path.append('/opt/ml/final-project-level3-nlp-08/src/elastic')
 from elastic import ElasticObject
 import torch
 import time
@@ -90,7 +90,7 @@ def preprocess(text):
     return text  
 
 def tokenize(query, tokenizer):
-    print(query)
+    # print(query)
     preprocessed_data="[Q] " + preprocess(query)
     tokenized_query = tokenizer(
         preprocessed_data, return_tensors="pt", padding=True, truncation=True, max_length=128
@@ -133,7 +133,7 @@ def load_model():
 model = load_model()
 
 def retriever(query):
-    _,outputs = elastic_connector.search(index_name="naver_docs", question=query, topk=100)
+    _,outputs = elastic_connector.search(index_name="blogs", question=query, topk=100)
     print("outputs!!!",outputs)
     print("wwwwwwwwwwwww!!!",type(outputs),outputs)
     return outputs
@@ -160,7 +160,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         infer_time = time.time() - start_time
         
         print("infer_text[source!!!",infer_text['source'])
-        contexts = [output['_source']['context'] for output in infer_text['source']]
+        contexts = [output['_source']['content'] for output in infer_text['source']]
         urls = [output['_source']['url'] for output in infer_text['source']]
         titles = [output['_source']['title'] for output in infer_text['source']]
         print("contexts!!!",len(contexts))

@@ -119,7 +119,7 @@ class ElasticObject:
                         "_type": "_doc",
                         "_id": i+1,
                         "title": v["title"],
-                        "context": v["content"],
+                        "content": v["content"],
                         "url": v['url'],
                         "copyright": v['copyright'],
                         "like": int(v['like']) if v['like'] else 0
@@ -174,7 +174,7 @@ class ElasticObject:
 
         body = {
             "_source": {
-                "includes": ["title", "url", "like","context"]
+                "includes": ["title", "url", "like","content"]
             }
             ,
             "query": 
@@ -184,7 +184,7 @@ class ElasticObject:
                             [
                                 {"match": 
                                     {
-                                        "context": question #content context 구별 주의
+                                        "content": question #content context 구별 주의
                                         }
                                     }
                                 ]
@@ -193,7 +193,7 @@ class ElasticObject:
                 }
 
         responses = self.client.search(index=index_name, body=body, size=topk)["hits"]["hits"]
-        responses = sorted(responses, key=lambda x:-int(x['_source']['like']) if x['_source'] else 0)
+        responses = sorted(responses, key=lambda x:-int(x['_source']['like']) if x['_source']['like'] else 0)
         
         random_summary_idx = random.randint(0, len(self.summary_messages)-1)
         random_recommend_idx = random.randint(0, len(self.recommend_messages)-1)
