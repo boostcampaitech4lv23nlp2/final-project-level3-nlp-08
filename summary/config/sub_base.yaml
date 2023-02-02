@@ -5,7 +5,7 @@ path:
 
 # TODO
 exp:
-    exp_name : subject_cls_multi_no_freeze # 변경 해야함!! 실험 이름
+    exp_name : subject_cls_multi_128 # 변경 해야함!! 실험 이름
     project_name : sglee_sub_cls # 변경 해야함!! 실험 공간 ex) Moongi_exp
 
 # TODO    
@@ -19,11 +19,11 @@ trainer:
     
 train:
     gpus: 1
-    batch_size: 64
-    max_epoch: 10
+    batch_size: 256
+    max_epoch: 20
     learning_rate: 1e-4
     logging_step: 25
-    save_total_limit : 4 # number of total save model.
+    save_total_limit : 3 # number of total save model.
     save_steps : 1000 # model saving step.
     warmup_steps : 0 # number of warmup steps for learning rate scheduler
     weight_decay : 0.01 # strength of weight decay
