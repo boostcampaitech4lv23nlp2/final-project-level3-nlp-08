@@ -8,7 +8,6 @@ retriever/blog_preprocess_model
 retriever/roberta_model
 retriever/.ipynb_checkpoints
 retriever/only_blog
-retriever/playground.ipynb
 # Jupyter
 *.ipynb
 __pycache__
@@ -19,7 +18,6 @@ build/
 src/elasticsearch/elastic_data.json
 src/elasticsearch/final_data.json
 retriever/f_embs.npy
-*.ipynb
 data
 data_csv
 data_csv_new
