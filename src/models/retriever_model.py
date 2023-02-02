@@ -1,7 +1,7 @@
 from transformers import BartForConditionalGeneration, PreTrainedTokenizerFast
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import sys
-sys.path.append('/opt/ml/clonef/src/elastic')
+sys.path.append('/opt/ml/input/project-level3-nlp-08/src/elastic')
 from elastic import ElasticObject
 import torch
 import time
