@@ -13,6 +13,7 @@ import numpy as np
 from transformers import AutoTokenizer, set_seed
 from datasets import load_from_disk
 #from collections import OrderedDict
+from keybert import KeyBERT
 
 def main():
     epoch = 10
@@ -25,6 +26,7 @@ def main():
 
     val_dataset = val_dataset.reset_index(drop=True)
     val_dataset = set_columns(val_dataset)
+    kw_model = KeyBERT('jhgan/ko-sroberta-multitask')
 
     tokenizer = load_tokenizer(MODEL_NAME)
     #tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -41,7 +43,16 @@ def main():
     context = list(dict.fromkeys([v["context"] for v in wiki.values()]))
     print("wiki loaded!!!")
 
-    query = list(val_dataset["query"])
+    print("keyword extracting....")
+    tmp = list(val_dataset["query"])
+    key_sents=[]
+    for sent in tmp:
+        keywords = kw_model.extract_keywords(sent)
+        key_sent=' '.join(keyword[0] for keyword in keywords)
+        key_sents.append(key_sent)
+
+    query = key_sents
+    print("keyword extracted!!, example :",query[0])
     ground_truth = list(val_dataset["ground_truth"]) #if using ict_dataset -> #list(val_dataset["ground_truth"])
 
     batched_p_embs = []

@@ -10,7 +10,6 @@ from tokenizer import *
 from model import *
 import json
 import pickle
-import wandb
 
 from transformers import (
     AutoConfig,
@@ -32,7 +31,7 @@ def main():
 
     batch_size = 16
     load_weight_path = False #"./best_model/colbert.pth" #False #"./best_model_aug/colbert_epoch10.pth"
-    data_path = "../../json_data/new_blogs_ict_dataset"
+    data_path = "../../data/new_blogs_ict_dataset"
 
     lr = 5e-5
     args = TrainingArguments(
@@ -92,7 +91,6 @@ def main():
         model.load_state_dict(torch.load(load_weight_path))
     model.to(device)
 
-    wandb.watch(model)
 
     print("model train...")
     trained_model = train(args, train_dataset, model)
@@ -184,7 +182,6 @@ def train(args, dataset, model):
             global_step += 1
             torch.cuda.empty_cache()
         final_loss = total_loss / len(dataset)
-        wandb.log({"final_loss":final_loss,"loss":total_loss})
         print("total_loss :", final_loss)
         #torch.save(model.state_dict(), f"./only_blog/compare_colbert_epoch{epoch+1}.pth")
 
@@ -192,5 +189,4 @@ def train(args, dataset, model):
 
 
 if __name__ == "__main__":
-    wandb.init(project="final-project", name="blog-ICT_ColBERT")
     main()
