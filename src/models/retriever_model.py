@@ -34,9 +34,7 @@ def tokenize_colbert(dataset, tokenizer ,corpus):
 
     # for inference
     if corpus == "query":
-        preprocessed_data = []
-        for query in dataset:
-            preprocessed_data.append("[Q] " + preprocess(query))
+        preprocessed_data = "[Q] " + preprocess(dataset)
 
         tokenized_query = tokenizer(
             preprocessed_data, return_tensors="pt", padding=True, truncation=True, max_length=128,
