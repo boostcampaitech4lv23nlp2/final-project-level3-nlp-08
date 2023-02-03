@@ -1,6 +1,4 @@
 # baseline : https://github.com/boostcampaitech3/level2-mrc-level2-nlp-11
-
-import pandas as pd
 import torch.nn as nn
 import numpy as np
 from tqdm import tqdm, trange

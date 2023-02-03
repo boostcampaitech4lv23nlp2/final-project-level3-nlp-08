@@ -93,6 +93,12 @@ class SocketManager:
         self.active_connections.append((websocket, user))
 
     def disconnect(self, websocket: WebSocket, user: str):
+        print(self.active_connections)
+        if len(self.active_connections) == 1:
+            try:
+                elastic_connector.client.indices.delete(index='chat-history')
+            except:
+                None
         self.active_connections.remove((websocket, user))
 
     async def broadcast(self, data: dict):
@@ -106,8 +112,6 @@ class SocketManager:
             return True
         return False
         
-        
-
 manager = SocketManager()
 
 @app.websocket("/api/chat")
@@ -140,7 +144,6 @@ async def chat(websocket: WebSocket):
                     messages = ""
                     await manager.broadcast(outputs['answer'])
                         
-                
         except WebSocketDisconnect:
             manager.disconnect(websocket, sender)
             response['message'] = sender + "님이 떠나셨습니다."

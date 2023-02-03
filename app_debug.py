@@ -26,7 +26,6 @@ templates = Jinja2Templates(directory='./templates')
 
 @app.on_event('startup')
 def make_history_index():
-
     if not elastic_connector.client.indices.exists(index='chat-history'):
         elastic_connector.create_index("chat-history", setting_path="./src/elastic/history_settings.json")
             
@@ -153,13 +152,8 @@ def get_test_msg(num):
 manager = SocketManager()
 debug_msg_count = 0
 
-
-
-
 @app.websocket("/api/chat")
 async def chat(websocket: WebSocket):
-
-    
     global debug_msg_count
     sender = websocket.cookies.get("X-Authorization")
     sender = parse.unquote(sender)

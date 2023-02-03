@@ -34,9 +34,7 @@ def tokenize_colbert(dataset, tokenizer ,corpus):
 
     # for inference
     if corpus == "query":
-        preprocessed_data = []
-        for query in dataset:
-            preprocessed_data.append("[Q] " + preprocess(query))
+        preprocessed_data = "[Q] " + preprocess(dataset)
 
         tokenized_query = tokenizer(
             preprocessed_data, return_tensors="pt", padding=True, truncation=True, max_length=128,
@@ -69,7 +67,7 @@ def tokenize_colbert(dataset, tokenizer ,corpus):
     else:
         preprocessed_query = []
         preprocessed_context = []
-        for query, context in zip(dataset["query"], dataset["context"]):
+        for query, context in zip(dataset["query"], dataset["content"]):
             preprocessed_context.append("[D] " + preprocess(context))
             preprocessed_query.append("[Q] " + preprocess(query))
         tokenized_query = tokenizer(
@@ -90,7 +88,7 @@ def preprocess(text):
     return text  
 
 def tokenize(query, tokenizer):
-    print(query)
+    # print(query)
     preprocessed_data="[Q] " + preprocess(query)
     tokenized_query = tokenizer(
         preprocessed_data, return_tensors="pt", padding=True, truncation=True, max_length=128
@@ -133,7 +131,7 @@ def load_model():
 model = load_model()
 
 def retriever(query):
-    _,outputs = elastic_connector.search(index_name="final_data", question=query, topk=3)
+    _,outputs = elastic_connector.search(index_name="final_data", question=query, topk=100)
     print("outputs!!!",outputs)
     print("wwwwwwwwwwwww!!!",type(outputs),outputs)
     return outputs
@@ -159,8 +157,8 @@ class ServerHandler(BaseHTTPRequestHandler):
         infer_text = retriever(input_text) #100개 뽑기
         infer_time = time.time() - start_time
         
-        print("infer_text[source!!!", infer_text['source'])
-        contexts = [output['_source']['context'] for output in infer_text['source']]
+        print("infer_text[source!!!",infer_text['source'])
+        contexts = [output['_source']['content'] for output in infer_text['source']]
         urls = [output['_source']['url'] for output in infer_text['source']]
         titles = [output['_source']['title'] for output in infer_text['source']]
         print("contexts!!!", len(contexts))
