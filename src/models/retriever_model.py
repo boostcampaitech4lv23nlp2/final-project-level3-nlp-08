@@ -133,7 +133,7 @@ def load_model():
 model = load_model()
 
 def retriever(query):
-    _,outputs = elastic_connector.search(index_name="naver_docs", question=query, topk=100)
+    _,outputs = elastic_connector.search(index_name="final_data", question=query, topk=3)
     print("outputs!!!",outputs)
     print("wwwwwwwwwwwww!!!",type(outputs),outputs)
     return outputs
@@ -159,11 +159,11 @@ class ServerHandler(BaseHTTPRequestHandler):
         infer_text = retriever(input_text) #100개 뽑기
         infer_time = time.time() - start_time
         
-        print("infer_text[source!!!",infer_text['source'])
+        print("infer_text[source!!!", infer_text['source'])
         contexts = [output['_source']['context'] for output in infer_text['source']]
         urls = [output['_source']['url'] for output in infer_text['source']]
         titles = [output['_source']['title'] for output in infer_text['source']]
-        print("contexts!!!",len(contexts))
+        print("contexts!!!", len(contexts))
 
         batched_p_embs = []
 
