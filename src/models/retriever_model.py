@@ -131,9 +131,9 @@ def load_model():
 model = load_model()
 
 def retriever(query):
-    _,outputs = elastic_connector.search(index_name="final_data", question=query, topk=100)
-    print("outputs!!!",outputs)
-    print("wwwwwwwwwwwww!!!",type(outputs),outputs)
+    _,outputs = elastic_connector.search(index_name="blogs", question=query, topk=10)
+    # print("outputs!!!",outputs)
+    # print("wwwwwwwwwwwww!!!",type(outputs),outputs)
     return outputs
 
 

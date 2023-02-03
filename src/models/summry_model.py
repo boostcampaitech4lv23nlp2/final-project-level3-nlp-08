@@ -25,7 +25,6 @@ def generate(text, beam_search_num=3):
     outputs = bart_model.generate(
         input_ids,
         num_beams=beam_search_num,
-        num_return_sequences=beam_search_num,
         max_length=512,
         no_repeat_ngram_size=2,
         repetition_penalty=2.0,
@@ -35,9 +34,9 @@ def generate(text, beam_search_num=3):
         bos_token_id=tokenizer.bos_token_id,
         bad_words_ids=[[tokenizer.unk_token_id]]).detach().cpu()
     
-    answers = tokenizer.batch_decode(outputs.tolist())
-    answers = list(map(lambda x:x.replace("</s>","").replace("<pad>","").replace("<usr>","").strip(), answers))
-    return answers[0]
+    answer = '✔' + tokenizer.decode(outputs[0])
+    answer = answer.replace("<pad>","").replace("<usr>","").replace('. ','.<br>✔ ').strip()
+    return answer
 
 class ServerHandler(BaseHTTPRequestHandler):
     
