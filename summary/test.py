@@ -47,7 +47,9 @@ def test(model_name, dataset, test_num, name_header=""):
             use_cache=True,
         )
         output = tokenizer.decode(output[0], skip_special_tokens=True)
-        print(model_name + " out\n", output)
+        print("context \n", c)
+        
+        print(" out\n", output)
         print("GT\n", s)
         score = rouge.get_scores(output, s, avg=True)
 

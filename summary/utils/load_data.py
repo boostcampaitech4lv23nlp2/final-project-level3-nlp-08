@@ -67,6 +67,7 @@ class BlendKoBARTSummaryDataset(Dataset):
         shuffle_param=2,
         max_shuffle_len=2,
         max_len=512,
+        tail_head_label=False,
         ignore_index=-100,
     ):
         super().__init__()
@@ -82,6 +83,7 @@ class BlendKoBARTSummaryDataset(Dataset):
         self.pad_index = self.tokenizer.pad_token_id
         self.bos = self.tokenizer.bos_token_id
         self.eos = self.tokenizer.eos_token_id
+        self.tail_head_label = tail_head_label
         self.ignore_index = ignore_index
         self.shuffle_param = shuffle_param
         self.max_shuffle_len = max_shuffle_len
@@ -147,7 +149,11 @@ class BlendKoBARTSummaryDataset(Dataset):
         aux_first_ids = aux_input_ids[: aux_bos_indices[1]]
         # dual inputs
         dual_input_ids = ori_input_ids + aux_input_ids
-        dual_label_ids = ori_label_ids + aux_label_ids
+        
+        if self.tail_head_label:
+            dual_label_ids =  aux_first_ids + [self.eos, self.bos] + ori_label_ids
+        else:
+            dual_label_ids = ori_label_ids + aux_label_ids
         # aux_first_sentence shuffle은 origin context의 마지막 2 문장에 대해서만 적용.
         dual_noise_input_ids = dual_input_ids.copy()
 
