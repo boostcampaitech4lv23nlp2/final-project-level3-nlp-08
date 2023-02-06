@@ -1,21 +1,3 @@
-# Final Project NLP-08
-
-# monstache
-
-```terminal
-$ wget https://github.com/rwynn/monstache/releases/download/v6.7.4/monstache-98f8bc6.zip
-
-$ unzip monstache-98f8bc6.zip
-```
-
-```bash
-$ cd ~
-$ mkdir monstache
-$ cd monstache
-```
-`vi mongo-elastic.toml`
-
-```toml
 # connection settings
 
 # connect to MongoDB using the following URL
@@ -81,11 +63,3 @@ file-highlighting = false
 [[mapping]]
 namespace = "test_database.blogs"
 index = "blogs"
-```
-
-```
-monstache -f /mongo-elastic.toml
-```
-
-background로 돌리고 싶을때 `nohup`사용
-
