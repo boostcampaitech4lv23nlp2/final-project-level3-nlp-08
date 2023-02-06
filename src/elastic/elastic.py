@@ -117,7 +117,7 @@ class ElasticObject:
                     doc = {
                         "_index": index_name,
                         "_type": "_doc",
-                        "_id": i+1,
+                        "_id": v['_id']['$oid'],
                         "title": v["title"],
                         "content": v["content"],
                         "url": v['url'],
@@ -125,9 +125,8 @@ class ElasticObject:
                         "like": int(v['like'].replace(",","")) if v['like'] else 0
                         
                     }
-                    docs.append(doc)
                     i += 1
-
+                    docs.append(doc)
         helpers.bulk(self.client, docs)
 
         print("Data Upload Completed")
@@ -212,7 +211,12 @@ class ElasticObject:
 if __name__ == "__main__":
 
     es = ElasticObject("localhost:9200")
-    es.create_index('final', setting_path='./settings.json')
-    es.insert_data('final', data_path ='./elastic_data')
-    outputs = es.search('final', "제주도 맛집을 찾고 있다.")
-    print(outputs)   
+    # 처음 ES를 생성 및 삽입할 경우 아래 적용
+    es.create_index('blogs', setting_path='./settings.json')
+    es.insert_data('blogs', './mongo_data.json')
+    
+    outputs = es.search('blogs', "여수시수여수 여수의 여수는 여수여수와 여수를 함께 하고 있다.")
+    print(outputs)
+    
+        
+        
