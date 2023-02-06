@@ -5,6 +5,7 @@ data_csv_new
 *_use.sh
 *_use.py
 
+models
 pre_models
 *.json
 test.txt
@@ -20,3 +21,14 @@ build/
 
 # nohup
 *.out
+*.cpp
+
+__pycache__
+
+summary/saved
+summary/results
+summary/datas
+summary/*.html
+
+wandb
+nohup.out

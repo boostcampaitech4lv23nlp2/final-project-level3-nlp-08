@@ -1,0 +1,36 @@
+path:
+    train_path: ./datas/subject_text/train_data.csv
+    dev_path: ./datas/subject_text/val_data.csv
+    predict_path: ./datas/Validation/val_data.csv
+
+# TODO
+exp:
+    exp_name : subject_cls_multi_no_freeze # 변경 해야함!! 실험 이름
+    project_name : sglee_sub_cls # 변경 해야함!! 실험 공간 ex) Moongi_exp
+
+# TODO    
+model:
+    model_name: papari1123/summary_bart_dual_R3F_aihub
+    mode_load_path: None #saved/subject_cls/checkpoint-3300/pytorch_model.bin
+    cls: 'multi' # binary, multi
+
+trainer:
+    mode: 'base' # only base
+    
+train:
+    gpus: 1
+    batch_size: 64
+    max_epoch: 10
+    learning_rate: 1e-4
+    logging_step: 25
+    save_total_limit : 4 # number of total save model.
+    save_steps : 1000 # model saving step.
+    warmup_steps : 0 # number of warmup steps for learning rate scheduler
+    weight_decay : 0.01 # strength of weight decay
+    logging_steps : 25  # log saving step.
+    eval_steps : 1000 # evaluation step
+
+
+test:
+    model_path : None
+    prediction : None
