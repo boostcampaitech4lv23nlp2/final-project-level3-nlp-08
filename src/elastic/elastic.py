@@ -122,7 +122,7 @@ class ElasticObject:
                         "content": v["content"],
                         "url": v['url'],
                         "copyright": v['copyright'],
-                        "like": int(v['like'].replace(',', '')) if v['like'] else 0
+                        "like": int(v['like'].replace(",","")) if v['like'] else 0
                         
                     }
                     i += 1
