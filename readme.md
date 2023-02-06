@@ -1,107 +1,82 @@
-# Final Project NLP-08
+# 실시간 대화 요약 & 컨텐츠 추천 봇: TravelTalk
 
-# monstache
+## 1. Introduction
 
-```terminal
-$ wget https://github.com/rwynn/monstache/releases/download/v6.7.4/monstache-98f8bc6.zip
+프로젝트 설명
 
-$ unzip monstache-98f8bc6.zip
-```
+
+#### Members
+
+|                            김현수                            |                            이성구                            |                            이현준                            |                            조문기                            |                            조익노                            |
+| :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| <img src='https://avatars.githubusercontent.com/u/97166760?v=4' height=80 width=80px></img> | <img src='https://avatars.githubusercontent.com/u/33012030?v=4' height=80 width=80px></img> | <img src='https://avatars.githubusercontent.com/u/87929279?v=4' height=80 width=80px></img> | <img src='https://avatars.githubusercontent.com/u/28976334?v=4' height=80 width=80px></img> | <img src='https://avatars.githubusercontent.com/u/49403520?v=4' height=80 width=80px></img> |
+| [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/khs0415p) | [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/papari1123) | [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/coderJoon) | [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/siryuon) | [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/iknocho) |
+
+### Contribution
+
+- [`김현수`](https://github.com/khs0415p) &nbsp; Project Management • Service Dataset • Front-end & Back-end Update • EDA
+- [`이성구`](https://github.com/papari1123) &nbsp; Modeling • Model Optimization • AutoML • EDA
+- [`이현준`](https://github.com/coderJoon) &nbsp; Model Optimization • Application Cloud Release (GKE) • Service Architecture
+- [`조문기`](https://github.com/siryuon) &nbsp; Baseline Code • Modeling • Model Optimization • EDA
+- [`조익노`](https://github.com/iknocho) &nbsp; Service Dataset • EDA • Front-end & Back-end Update
+
+
+## 2. Model
+
+### KoBART
+
+### ColBERT
+
+
+## 3. Flow Chart
+
+### System Architecture
+
+Image
+
+### Pipeline
+
+Image
+
+## 4. How to Use
+
+### Install Requirements
 
 ```bash
-$ cd ~
-$ mkdir monstache
-$ cd monstache
-```
-`vi mongo-elastic.toml`
-
-```toml
-# connection settings
-
-# connect to MongoDB using the following URL
-mongo-url = "mongodb+srv://nlp-08:finalproject@cluster0.rhr2bl2.mongodb.net/?retryWrites=true&w=majority"
-
-# connect to the Elasticsearch REST API at the following node URLs
-elasticsearch-urls = ["http://localhost:9200"]
-
-# frequently required settings
-# if you need to seed an index from a collection and not just listen and sync changes events
-# you can copy entire collections or views from MongoDB to Elasticsearch
-direct-read-namespaces = ["test_database.blogs"]
-
-# if you want to use MongoDB change streams instead of legacy oplog tailing use change-stream-namespaces
-# change streams require at least MongoDB API 3.6+
-# if you have MongoDB 4+ you can listen for changes to an entire database or entire deployment
-# in this case you usually don't need regexes in your config to filter collections unless you target the deployment.
-# to listen to an entire db use only the database name.  For a deployment use an empty string.
-change-stream-namespaces = ["test_database.blogs"]
-
-# additional settings
-# compress requests to Elasticsearch
-gzip = true
-
-# generate indexing statistics
-stats = true
-
-# index statistics into Elasticsearch
-index-stats = true
-
-# use 4 go routines concurrently pushing documents to Elasticsearch
-elasticsearch-max-conns = 4
-
-# propogate dropped collections in MongoDB as index deletes in Elasticsearch
-dropped-collections = false
-
-# propogate dropped databases in MongoDB as index deletes in Elasticsearch
-dropped-databases = false
-
-# in Elasticsearch with a newer version. Elasticsearch is preventing the old docs from overwriting new ones.
-replay = false
-
-# resume processing from a timestamp saved in a previous run
-resume = false
-
-# do not validate that progress timestamps have been saved
-resume-write-unsafe = true
-
-# override the name under which resume state is saved
-resume-name = "default"
-
-# use a custom resume strategy (tokens) instead of the default strategy (timestamps)
-# tokens work with MongoDB API 3.6+ while timestamps work only with MongoDB API 4.0+
-resume-strategy = 1
-
-# print detailed information including request traces
-verbose = true
-index-as-update = true
-index-oplog-time = false
-index-files = false
-file-highlighting = false
-
-[[mapping]]
-namespace = "test_database.blogs"
-index = "blogs"
+pip install -r requirements.txt
 ```
 
+### Project Tree
+
 ```
-monstache -f /mongo-elastic.toml
+|-- app
+|   |-- assets
+|   |-- src
+|   |   |-- elastic
+|   |   └-- models
+|   |-- templates
+|   |-- app.py
+|   |-- config.py
+|   └-- mongodb.py
+|-- train
+|   |-- summary
+|   └-- retriever
+└-- monstache
+    └-- mongo-elastic.toml
+
 ```
 
-background로 돌리고 싶을때 `nohup`사용
-
-## develop_summary용 How to run
-
-### Train
-```commandLine
-python train.py --config {config}
+### Getting Started
+- Train
+```python
+python train.py -c config.json
 ```
-- config옵션을 주지 않을 경우, config/base.yaml이 실행됨.
-- 실험 환경 세팅은 yaml 파일을 변경함.
-
-### Inference
-```commandLine
-python test.py --config {config} --data {data_path} --model_path {model_path}
+- Run
+```python
+python test.py -c config.json    # test_config.json
 ```
-- config 옵션을 주지 않을 경우, config/base.yaml이 실행됨.
-- data 옵션을 주지 않을 경우, config/base.yaml의 predict_path를 불러옴.
-- model_path 옵션을 주지 않을 경우, config/base.yaml의 model_path를 불러옴.
+
+
+## 5. Demo 
+
+## 6. Reference
