@@ -1,7 +1,7 @@
 from transformers import BartForConditionalGeneration, PreTrainedTokenizerFast
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import sys
-sys.path.append('/opt/ml/final-project-level3-nlp-08/src/elastic')
+sys.path.append('/opt/ml/final_project/final-project-level3-nlp-08/src/elastic')
 from elastic import ElasticObject
 import torch
 import time
@@ -102,11 +102,11 @@ def get_score(Q, D, N=None, eval=False):
             for D_batch in tqdm(D):
                 D_batch = np.array(D_batch)
                 D_batch = torch.Tensor(D_batch).squeeze()
-                print("Docu_dim_size!! : ",D_batch.shape)
+                #print("Docu_dim_size!! : ",D_batch.shape)
                 p_seqeunce_output = D_batch.transpose(
                     1, 2
                 )  # (batch_size,hidden_size,p_sequence_length)-> 200 128 512
-                print("Query_dim_size!! : ",Q.size()) 
+                #print("Query_dim_size!! : ",Q.size()) 
                 q_sequence_output = Q.view(
                     1, 1, -1, 128
                 )  # (1, 1, q_sequence_length, hidden_size)
@@ -118,7 +118,7 @@ def get_score(Q, D, N=None, eval=False):
                 ]  # (batch_size,batch_size,q_sequnce_length)
                 score = torch.sum(max_dot_prod_score, dim=2)  # (batch_size,batch_size)
                 final_score = torch.cat([final_score, score], dim=1)
-            print("final_score!! :",final_score.size())
+            #print("final_score!! :",final_score.size())
             return final_score
 
 def load_model():
@@ -131,11 +131,16 @@ def load_model():
 model = load_model()
 
 def retriever(query):
-    _,outputs = elastic_connector.search(index_name="blogs", question=query, topk=100)
-    print("outputs!!!",outputs)
-    print("wwwwwwwwwwwww!!!",type(outputs),outputs)
+    _,outputs = elastic_connector.search(index_name="blogs", question=query, topk=1000)
+    #print("outputs!!!",outputs)
+    #print("wwwwwwwwwwwww!!!",type(outputs),outputs)
     return outputs
 
+def load_emb():
+    emb_list= np.load('./f_embs.npy',allow_pickle=True)
+    return emb_list[0]
+
+emb_dict = load_emb()
 
 
 class ServerHandler(BaseHTTPRequestHandler):
@@ -157,24 +162,33 @@ class ServerHandler(BaseHTTPRequestHandler):
         infer_text = retriever(input_text) #100개 뽑기
         infer_time = time.time() - start_time
         
-        print("infer_text[source!!!",infer_text['source'])
+        #print("infer_text[source!!!",infer_text['source'])
         contexts = [output['_source']['content'] for output in infer_text['source']]
         urls = [output['_source']['url'] for output in infer_text['source']]
         titles = [output['_source']['title'] for output in infer_text['source']]
-        print("contexts!!!",len(contexts))
+        ids=[output['_id']for output in infer_text['source']]
+        #print("contexts!!!",len(contexts))
 
         batched_p_embs = []
 
         with torch.no_grad():
-            print("Start passage embedding......")
+            print("Start matching ES embedding......")
             p_embs = []
+            """
             for step, p in enumerate(tqdm(contexts)):
+                
                 p = tokenize_colbert(p, tokenizer, corpus="doc").to("cuda")
                 p_emb = model.doc(**p).to("cpu").numpy()
                 p_embs.append(p_emb)
                 if (step + 1) % 200 == 0:
                     batched_p_embs.append(p_embs)
                     p_embs = []
+                """
+            for step, p in enumerate(tqdm(ids)):
+                p_embs.append(emb_dict[p])
+                if (step+1)%200 == 0:
+                    batched_p_embs.append(p_embs)
+                    p_embs=[]
             if p_embs:
                 batched_p_embs.append(p_embs)
 
@@ -217,4 +231,3 @@ def run(server_class=HTTPServer, handler_class=ServerHandler, port=8503):
 
 if __name__ == "__main__":
     run()
-    # print(generate('후쿠오카 어쩌구 저쩌구 이거 요약해주라고 좋냐 안좋냐후쿠오카 일본일본 어떄?일본 별루?일본짱엥?렉걸린다쉣일본 별로야?????????????????????일본 맛집 어떤데???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????'))
