@@ -138,7 +138,7 @@ def get_test_msg(num):
 
     
     # 나중에 불러오는 코드 따로 짤 것
-    txt_path = '/opt/ml/input/project-level3-nlp-08/summary/datas/slack/slack_final.txt'
+    txt_path = '/opt/ml/input/project-level3-nlp-08/summary/datas/slack/slack_final_5.txt'
     with open(txt_path, "r") as f:
         text = f.readlines()
     if 'kakao' in txt_path:
@@ -151,10 +151,13 @@ def get_test_msg(num):
 
 manager = SocketManager()
 debug_msg_count = 0
+messages = ""
 
 @app.websocket("/api/chat")
 async def chat(websocket: WebSocket):
     global debug_msg_count
+    
+    global messages
     sender = websocket.cookies.get("X-Authorization")
     sender = parse.unquote(sender)
     if sender:
@@ -164,7 +167,6 @@ async def chat(websocket: WebSocket):
             "sender": sender,
             "message": sender + "님이 접속하셨습니다."
         }
-        messages = ""
         # debug param
         
         # debug param end
@@ -178,13 +180,12 @@ async def chat(websocket: WebSocket):
                 print(data)
                 if data['message'] == "t":
                     data['message'] = get_test_msg(debug_msg_count)
-                    debug_msg_count += 1
                 # TEST End
-                
+                debug_msg_count += 1
                 messages += ('<s>' + data['message'] + '</s> ')       
                 await manager.broadcast(data)
                 
-                if len(messages) >= 100 or (manager.check_recommend() and len(messages) > 70):
+                if len(messages) >= 300 or (manager.check_recommend() and len(messages) > 300):
                     summary_output = requests.post("http://localhost:8502", json={"text": messages}).json()
                     outputs = requests.post("http://localhost:8503", json={"text": summary_output['answer']}).json()
 
