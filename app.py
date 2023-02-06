@@ -149,7 +149,7 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                 context = ''
                 await manager.broadcast(data)
                 
-                if (get_message_list_token(message_list) > 5 or (manager.check_recommend() and get_message_list_token(message_list)) >= 50) and check_speaker_change(messages):
+                if (get_message_list_token(message_list) > 30 or (manager.check_recommend() and get_message_list_token(message_list)) >= 50) and check_speaker_change(messages):
                     context = '<s>' + messages[0].message
                     context = '</s> <s>'.join(message_list)
                     context = context + '</s>'

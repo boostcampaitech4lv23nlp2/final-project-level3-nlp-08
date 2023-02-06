@@ -12,3 +12,4 @@ uvicorn==0.12.2
 uvloop==0.14.0
 watchgod==0.6
 websockets==8.1
+motor
