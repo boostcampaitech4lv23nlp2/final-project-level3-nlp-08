@@ -13,3 +13,9 @@ uvloop==0.14.0
 watchgod==0.6
 websockets==8.1
 motor
+torch==1.13
+datasets==2.7.1
+transformers==4.25.1
+tqdm
+pandas
+pymongo
