@@ -112,7 +112,7 @@ class ElasticObject:
                 data = json.load(f)
 
             print("Data Loding...")
-            for v in data['posts']:
+            for v in data:
                 if not self._check_docs(url=v['url'], index_name=index_name):
                     doc = {
                         "_index": index_name,
@@ -122,7 +122,7 @@ class ElasticObject:
                         "content": v["content"],
                         "url": v['url'],
                         "copyright": v['copyright'],
-                        "like": int(v['like']) if v['like'] else 0
+                        "like": int(v['like'].replace(",","")) if v['like'] else 0
                         
                     }
                     docs.append(doc)
@@ -212,10 +212,7 @@ class ElasticObject:
 if __name__ == "__main__":
 
     es = ElasticObject("localhost:9200")
-    # es.create_index('blogs', setting_path='./settings.json')
-    
-    outputs = es.search('blogs', "여수시수여수 여수의 여수는 여수여수와 여수를 함께 하고 있다.")
-    print(outputs)
-    
-        
-        
+    es.create_index('final', setting_path='./settings.json')
+    es.insert_data('final', data_path ='./elastic_data')
+    outputs = es.search('final', "제주도 맛집을 찾고 있다.")
+    print(outputs)   
