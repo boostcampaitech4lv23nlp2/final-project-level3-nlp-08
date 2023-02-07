@@ -375,11 +375,12 @@
       });
 
 
-      var socket = new WebSocket("http://49.50.167.54:3000/api/chat");
+      var socket = new WebSocket("ws://49.50.167.54:30001/api/chat");
       socket.onmessage = function (event) {
 
         var data = JSON.parse(event.data);
         var location = data['location'];
+
 
         if (location == 'recommend') {
           var parent = $('.url_wrap .inner')
