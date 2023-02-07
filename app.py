@@ -135,7 +135,7 @@ async def chat(websocket: WebSocket):
             "sender": sender,
             "message": sender + "님이 접속하셨습니다."
         }
-        messages = ""
+        
         await manager.broadcast(response)
         await load_chat()
         try:
@@ -144,8 +144,12 @@ async def chat(websocket: WebSocket):
                 messages += ('<s>' + data['message'] + '</s> ')
                 await manager.broadcast(data)
                 
-                if len(messages) >= 100 or (manager.check_recommend() and len(messages) > 70):
-                    summary_output = requests.post("http://localhost:8502", json={"text": messages}).json()
+                if (get_message_list_token(message_list) > 30 or (manager.check_recommend() and get_message_list_token(message_list)) >= 50) and check_speaker_change(messages):
+                    context = '<s>' + messages[0].message
+                    context = '</s> <s>'.join(message_list)
+                    context = context + '</s>'
+
+                    summary_output = requests.post("http://localhost:8502", json={"text": context}).json()
                     outputs = requests.post("http://localhost:8503", json={"text": summary_output['answer']}).json()
 
                     current_time = (datetime.datetime.now() - datetime.timedelta(hours=3)).strftime('%Y/%m/%d %H:%M:%S')
