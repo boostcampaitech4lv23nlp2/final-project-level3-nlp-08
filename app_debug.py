@@ -153,6 +153,17 @@ manager = SocketManager()
 debug_msg_count = 0
 messages = ""
 
+async def get_model_result():
+    global messages
+    summary_output = requests.post("http://localhost:8502", json={"text": messages}).json()
+    outputs = requests.post("http://localhost:8503", json={"text": summary_output['answer']}).json()
+
+    current_time = (datetime.datetime.now() - datetime.timedelta(hours=3)).strftime('%Y/%m/%d %H:%M:%S')
+    outputs['answer']['date'] = current_time
+    elastic_connector.client.index(index='chat-history',  body=outputs['answer'])
+    messages = ""
+    await manager.broadcast(outputs['answer'])  
+
 @app.websocket("/api/chat")
 async def chat(websocket: WebSocket):
     global debug_msg_count
@@ -186,14 +197,7 @@ async def chat(websocket: WebSocket):
                 await manager.broadcast(data)
                 
                 if len(messages) >= 300 or (manager.check_recommend() and len(messages) > 300):
-                    summary_output = requests.post("http://localhost:8502", json={"text": messages}).json()
-                    outputs = requests.post("http://localhost:8503", json={"text": summary_output['answer']}).json()
-
-                    current_time = (datetime.datetime.now() - datetime.timedelta(hours=3)).strftime('%Y/%m/%d %H:%M:%S')
-                    outputs['answer']['date'] = current_time
-                    elastic_connector.client.index(index='chat-history',  body=outputs['answer'])
-                    messages = ""
-                    await manager.broadcast(outputs['answer'])
+                    await get_model_result()
                         
                 
         except WebSocketDisconnect:
