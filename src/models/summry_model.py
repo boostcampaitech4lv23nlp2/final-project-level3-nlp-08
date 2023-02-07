@@ -19,7 +19,7 @@ bart_model = load_model()
 
 def generate(text, beam_search_num=3):
     
-    input_ids = [tokenizer.bos_token_id] + tokenizer.encode(text) + [tokenizer.eos_token_id]
+    input_ids = [tokenizer.bos_token_id] + tokenizer.encode(text)[:510] + [tokenizer.eos_token_id]
     input_ids = torch.tensor([input_ids]).to(device)
     
     outputs = bart_model.generate(
