@@ -13,8 +13,7 @@ from src.elastic.elastic import ElasticObject
 from urllib import parse
 from config import MONGODB_NAME
 import asyncio, aiohttp
-import requests
-import pprint
+import time
 
 from datetime import timedelta
 elastic_connector = ElasticObject("localhost:9200")    
@@ -40,7 +39,7 @@ async def startup_event():
         logging.info(e)
         pass           
 
-async def load_chat():
+async def load_chat(visitant:None):
     try:
         body = {
             "size": 1000,
@@ -58,7 +57,7 @@ async def load_chat():
         resp = elastic_connector.client.search(index="chat-history", body=body)
         if resp['hits']['hits']:
             for res in resp['hits']['hits']:
-                await manager.broadcast(res['_source'])
+                await manager.broadcast(res['_source'], visitant)
     except:
         pass
     
@@ -84,7 +83,7 @@ class RegisterValidator(BaseModel):
         
 @app.post("/api/register")
 def register_user(user: RegisterValidator, response: Response):
-    response.set_cookie(key="X-Authorization", value=parse.quote(user.username), httponly=True)
+    response.set_cookie(key="X-Author0ization", value=parse.quote(user.username), httponly=True)
     
     
 
@@ -113,9 +112,22 @@ class SocketManager:
                 None
         self.active_connections.remove((websocket, user))
 
-    async def broadcast(self, data: dict):
-        for connection in self.active_connections:
-            await connection[0].send_json(data)
+    async def broadcast(self, data: dict, private_user=None):
+        """
+        private_user : 개인에게만 broadcast할 경우 이름 설정
+        # TODO : 
+        # 고도화 시 self.active_connectios을 list가 아니라 
+        # user_id를 key, socket을 value로 가지는 dict로 만들어서 
+        # private_user에 대해 O(1)의 시간에 접근하도록 할 것.
+        # 이를 위해서는 회원가입 과정에서 중복된 이름은 등록되지 않도록 하는 로직 필요함
+        """
+        print(self.active_connections)
+        for (socket, user) in self.active_connections:
+            print(socket, user)
+            if not private_user:
+                await socket.send_json(data)
+            elif user == private_user:
+                await socket.send_json(data)
             
     def check_recommend(self):
         now_time = datetime.now()
@@ -176,7 +188,7 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
                 res = await stack_message(data, collection)
                 messages = await get_messages()
                 message_list = get_message_list(messages)
-                await manager.broadcast(data)    
+                await manager.broadcast(data)  
                 if (get_message_list_token(message_list) > 10
                     or (manager.check_recommend() and get_message_list_token(message_list)) >= 50) and check_speaker_change(messages):
                     collection.delete_many({})

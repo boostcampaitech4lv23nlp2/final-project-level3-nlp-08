@@ -1,5 +1,6 @@
 from transformers import BartForConditionalGeneration, PreTrainedTokenizerFast
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import os
 import sys
 sys.path.append('/opt/ml/input/final-project-level3-nlp-08/src/elastic/')
 from elastic import ElasticObject
@@ -137,8 +138,15 @@ def retriever(query):
     return outputs
 
 def load_emb():
-    emb_list= np.load('./f_embs.npy',allow_pickle=True)
-    return emb_list[0]
+    # 사전 임베딩
+    file_path = './f_embs.npy'
+    if os.path.isfile(file_path):
+        emb_list= np.load(file_path, allow_pickle=True)
+        return emb_list[0]
+    else:
+    # docs 사전 임베딩이 없을 경우 -> query마다 docs의 emb 매번 생성
+        print('f_embs.npy is not found.')
+        return None
 
 emb_dict = load_emb()
 
@@ -174,23 +182,26 @@ class ServerHandler(BaseHTTPRequestHandler):
         with torch.no_grad():
             print("Start matching ES embedding......")
             p_embs = []
-            """
-            for step, p in enumerate(tqdm(contexts)):
-                
-                p = tokenize_colbert(p, tokenizer, corpus="doc").to("cuda")
-                p_emb = model.doc(**p).to("cpu").numpy()
-                p_embs.append(p_emb)
-                if (step + 1) % 200 == 0:
+            if emb_dict:
+                # f_embs.npy가 있을 경우
+                for step, p in enumerate(tqdm(ids)):
+                    p_embs.append(emb_dict[p])
+                    if (step+1)%200 == 0:
+                        batched_p_embs.append(p_embs)
+                        p_embs=[]
+                if p_embs:
                     batched_p_embs.append(p_embs)
-                    p_embs = []
-                """
-            for step, p in enumerate(tqdm(ids)):
-                p_embs.append(emb_dict[p])
-                if (step+1)%200 == 0:
-                    batched_p_embs.append(p_embs)
-                    p_embs=[]
-            if p_embs:
-                batched_p_embs.append(p_embs)
+            else:
+                # f_embs.npy가 없을 경우 -> query마다 emb 생성
+                for step, p in enumerate(tqdm(contexts)):
+                    
+                    p = tokenize_colbert(p, tokenizer, corpus="doc").to("cuda")
+                    p_emb = model.doc(**p).to("cpu").numpy()
+                    p_embs.append(p_emb)
+                    if (step + 1) % 200 == 0:
+                        batched_p_embs.append(p_embs)
+                        p_embs = []
+
 
         with torch.no_grad():
             model.eval()
