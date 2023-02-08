@@ -13,7 +13,8 @@ from src.elastic.elastic import ElasticObject
 from urllib import parse
 from config import MONGODB_NAME
 import asyncio, aiohttp
-import time
+import requests
+import pprint
 
 from datetime import timedelta
 elastic_connector = ElasticObject("localhost:9200")    
@@ -39,7 +40,7 @@ async def startup_event():
         logging.info(e)
         pass           
 
-async def load_chat(visitant:None):
+async def load_chat(visitant:str):
     try:
         body = {
             "size": 1000,
@@ -83,7 +84,7 @@ class RegisterValidator(BaseModel):
         
 @app.post("/api/register")
 def register_user(user: RegisterValidator, response: Response):
-    response.set_cookie(key="X-Author0ization", value=parse.quote(user.username), httponly=True)
+    response.set_cookie(key="X-Authorization", value=parse.quote(user.username), httponly=True)
     
     
 
@@ -121,12 +122,11 @@ class SocketManager:
         # private_user에 대해 O(1)의 시간에 접근하도록 할 것.
         # 이를 위해서는 회원가입 과정에서 중복된 이름은 등록되지 않도록 하는 로직 필요함
         """
-        print(self.active_connections)
         for (socket, user) in self.active_connections:
-            print(socket, user)
             if not private_user:
                 await socket.send_json(data)
             elif user == private_user:
+                print('private')
                 await socket.send_json(data)
             
     def check_recommend(self):
@@ -181,15 +181,15 @@ async def chat(websocket: WebSocket, client: AsyncIOMotorClient = Depends(get_no
         }
 
         await manager.broadcast(response)
-        await load_chat()
+        await load_chat(sender)
         try:
             while True:
                 data = await websocket.receive_json()
                 res = await stack_message(data, collection)
                 messages = await get_messages()
                 message_list = get_message_list(messages)
-                await manager.broadcast(data)  
-                if (get_message_list_token(message_list) > 10
+                await manager.broadcast(data)    
+                if (get_message_list_token(message_list) > 30
                     or (manager.check_recommend() and get_message_list_token(message_list)) >= 50) and check_speaker_change(messages):
                     collection.delete_many({})
                     asyncio.create_task(get_result(messages))
