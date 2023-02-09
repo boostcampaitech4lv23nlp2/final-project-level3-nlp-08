@@ -12,6 +12,9 @@
 |:---:|:---:|:---:|:---:|:---:|
 | <img src='https://avatars.githubusercontent.com/u/97166760?v=4' height=80 width=80px></img> | <img src='https://avatars.githubusercontent.com/u/33012030?v=4' height=80 width=80px></img> | <img src='https://avatars.githubusercontent.com/u/87929279?v=4' height=80 width=80px></img> | <img src='https://avatars.githubusercontent.com/u/28976334?v=4' height=80 width=80px></img> | <img src='https://avatars.githubusercontent.com/u/49403520?v=4' height=80 width=80px></img> |
 | [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/khs0415p) | [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/papari1123) | [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/coderJoon) | [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/siryuon) | [![Git Badge](http://img.shields.io/badge/-Github-black?style=flat-square&logo=github)](https://github.com/iknocho) |
+| ------------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- |
+
+| [GitHub](https://github.com/kuotient/kuotient) | [GitHub](https://github.com/gustn9609) | [GitHub](https://github.com/ggb04110) | [GitHub](https://github.com/soypabloo) | [GitHub](https://github.com/soohi0/soohi0) |
 
 ### Contribution
 
@@ -44,15 +47,19 @@
 
 ### KoBART
 ![image](https://user-images.githubusercontent.com/28976334/217154805-074a1273-57d5-4a8b-a5ec-7a5bf6d0f78e.png)
+#### Result
+![image](https://user-images.githubusercontent.com/28976334/217692822-873a5243-a78b-4d94-8ba8-75e3465a6147.png)
 
 ### ColBERT
 ![image](https://user-images.githubusercontent.com/28976334/217154876-e0783607-28ef-489c-903b-841923acb695.png)
+#### Result
+![image](https://user-images.githubusercontent.com/28976334/217692905-5b401b6a-a82a-4359-b55f-adbe1a0b6b5c.png)
 
 ## 3. Flow Chart
 
 ### System Architecture
 
-![image](https://user-images.githubusercontent.com/28976334/217154000-58a532b1-4539-4473-b09a-c0fabbfc6274.png)
+![image](https://user-images.githubusercontent.com/28976334/217692565-47e03ab8-0eb9-4187-ad1f-bbd61a274c59.png)
 
 ### Pipeline
 
@@ -88,7 +95,7 @@ python ./src/models/retriever_model.py
 
 ## 5. Demo 
 ![image](https://user-images.githubusercontent.com/28976334/217154127-3c9c578d-63d2-486d-8ecf-fce637c39e29.png)
-Video Link: TBA
+- Video Link: [YouTube](https://youtu.be/byFroRoArCY)
 
 ## 6. Reference
 - [Dense Passage Retrieval for Open-Domain Question Answering](https://arxiv.org/pdf/2004.04906.pdf)
