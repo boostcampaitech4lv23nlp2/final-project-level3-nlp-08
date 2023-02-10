@@ -2,7 +2,7 @@ from transformers import BartForConditionalGeneration, PreTrainedTokenizerFast
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 import sys
-sys.path.append('/opt/ml/input/final-project-level3-nlp-08/src/elastic/')
+sys.path.append('/opt/ml/clonef2/src/elastic')
 from elastic import ElasticObject
 import torch
 import time
@@ -132,7 +132,7 @@ def load_model():
 model = load_model()
 
 def retriever(query):
-    _,outputs = elastic_connector.search(index_name="blogs", question=query, topk=1000)
+    _,outputs = elastic_connector.search(index_name="blogs", question=query, topk=100)
     #print("outputs!!!",outputs)
     #print("wwwwwwwwwwwww!!!",type(outputs),outputs)
     return outputs
@@ -175,10 +175,11 @@ class ServerHandler(BaseHTTPRequestHandler):
         urls = [output['_source']['url'] for output in infer_text['source']]
         titles = [output['_source']['title'] for output in infer_text['source']]
         ids=[output['_id']for output in infer_text['source']]
+        scores=[output['_score'] for output in infer_text['source']]
         #print("contexts!!!",len(contexts))
 
         batched_p_embs = []
-
+        print("emb_dict",emb_dict)
         with torch.no_grad():
             print("Start matching ES embedding......")
             p_embs = []
@@ -201,14 +202,16 @@ class ServerHandler(BaseHTTPRequestHandler):
                     if (step + 1) % 200 == 0:
                         batched_p_embs.append(p_embs)
                         p_embs = []
-
-
+                if p_embs:
+                    batched_p_embs.append(p_embs)
         with torch.no_grad():
             model.eval()
             q_seqs_val = tokenize(input_text, tokenizer).to("cuda")
             q_emb = model.query(**q_seqs_val).to("cpu")
         
         dot_prod_scores = get_score(q_emb, batched_p_embs, eval=True)
+        ela_scores=torch.Tensor(scores)*8
+        dot_prod_scores= ela_scores+dot_prod_scores*3
         rank = torch.argsort(dot_prod_scores, dim=1, descending=True).squeeze()
                     
         sources = []
