@@ -12,6 +12,8 @@ exp:
 model:
     model_name: gogamza/kobart-summarization
     mode_load_path: None
+    aux_head_label: False
+    
 trainer:
     mode: 'blend' # base, blend
     kl_div_lambda: 0.1

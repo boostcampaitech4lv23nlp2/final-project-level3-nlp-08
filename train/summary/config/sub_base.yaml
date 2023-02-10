@@ -12,11 +12,11 @@ exp:
 model:
     model_name: papari1123/summary_bart_dual_R3F_aihub
     mode_load_path: None #saved/subject_cls/checkpoint-3300/pytorch_model.bin
-    cls: 'multi' # binary, multi
+    aux_head_label: False
 
 trainer:
     mode: 'base' # only base
-    
+    kl_div_lambda: 0.1
 train:
     gpus: 1
     batch_size: 256
